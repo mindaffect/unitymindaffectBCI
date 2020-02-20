@@ -13,6 +13,7 @@ This repository is organized roughly as follows:
      - NoisetagBehaviour.cs - this script contains the behaviour that allows a GameObject to be controlled by the BCI
      - GameManager.cs - this script is the main manager for the different phase of the game, e.g. switching between calibration and prediction
    - Models - the 3d models
+   - doc - contains general documentation for developers on the architecture of the mindaffectBCI and the low-level networking protocols it uses.  (Whilst useful to give an overview, ideally you should not need to read this.)
 
 Installing mindaffectBCI
 ------------------------
