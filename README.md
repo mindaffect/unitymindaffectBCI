@@ -29,13 +29,13 @@ This SDK provides the functionality needed to add Brain Controls to your own app
 In order to allow you to develop and test your Brain Controlled applications without connecting to a real mindaffect Decoder, we provide a so called "fake recogniser".  This fake recogniser simulates the operation of the true mindaffect decoder to allow easy development and debugging.  Before starting with the example output and presentation modules.  You can download the fakerecogniser from our [github page](https://github.com/mindaffect/pymindaffectBCI/tree/master/bin)
 
 You should start this fake recogniser by running, either ::
-
+```
   bin/startFakeRecogniser.bat
-  
+```  
 if running on windows, or  ::
-
+```
   bin/startFakeRecogniser.sh
-
+```
 if running on linux/macOS
 
 If successfull, running these scripts should open a terminal window which shows the messages recieved/sent from your example application.
@@ -52,8 +52,8 @@ Simple *presention* module
 
 To use this code in your own games, follow these steps:
   1. Copy the Scripts directory from the Assests directory of this project into your game.
-  2. Create a new empty game-object in the base of your game, and attache the NoiseController.cs script to this object.
-  3. Create the game objects you want to BCI control, and attach the NoiseBehaviour.cs script to them.
+  2. Create a new empty game-object in the base of your game, and attache the `NoiseController.cs` script to this object.
+  3. Create the game objects you want to BCI control, and attach the `NoisetagBehaviour.cs` script to them.
   4. For each BCI controlled game-object you have, in the editor define the code you want to execute when it is selected.
   5. In your main game manager, tell the noise-tag-controller to go into the correct mode. e.g.
      For Calibration mode, with 10 calibration trials of about 4 seconds use
