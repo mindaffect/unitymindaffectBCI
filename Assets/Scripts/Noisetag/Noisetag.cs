@@ -717,7 +717,6 @@ namespace nl.ma.utopia
             GSM stimulusStateStack = null,
             params object[] args)
         {
-            if (objIDs == null) throw new ArgumentNullException("objIDs cannot be null");
             this.objIDs = objIDs;
             this.stimSeq = stimSeq;
             this.nCal = nCal;

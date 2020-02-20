@@ -17,6 +17,7 @@ public class GameSceneManager : MonoBehaviour
     void Start()
     {
         NoisetagController nt = FindObjectOfType<NoisetagController>();
+        nt.startPrediction(10);
         // return to main menu when noise tag squence is done...
         nt.sequenceCompleteEvent.AddListener(GoMainMenu);
         nt.connectedEvent.AddListener(GoMainMenu);
