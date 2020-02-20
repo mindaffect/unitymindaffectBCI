@@ -56,9 +56,12 @@ To use this code in your own games, follow these steps:
   3. Create the game objects you want to BCI control, and attach the NoiseBehaviour.cs script to them.
   4. For each BCI controlled game-object you have, in the editor define the code you want to execute when it is selected.
   5. In your main game manager, tell the noise-tag-controller to go into the correct mode. e.g.
-     For Calibration mode, with 10 calibration trials of about 4 seconds use ::
+     For Calibration mode, with 10 calibration trials of about 4 seconds use
+```
         FindObjectOfType<NoisetagController>().startCalibration(10)
+```
 
      Or for Prediction mode, for 10 selections. use::
+```
         FindObjectOfType<NoisetagController>().startPrediction(10)
-	
+```	
