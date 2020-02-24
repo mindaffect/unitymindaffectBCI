@@ -44,7 +44,7 @@ public class NoisetagController : MonoBehaviour
     private int[] objIDs = null;
 
     // singlenton field
-    private static NoistagController _instance;
+    private static NoisetagController _instance;
 
     // singlenton accessor field
     public static NoisetagController Instance
@@ -52,11 +52,6 @@ public class NoisetagController : MonoBehaviour
 	get { return _instance; }
     }
 
-    // singlenton instantation 
-    private void Awake()
-    {
-    }
-        
     // Awake is called **before** any Start methods.
     // so we make sure the NoiseTag controller is ready before
     // any game objects which may want to use it!
