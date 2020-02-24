@@ -43,23 +43,37 @@ public class NoisetagController : MonoBehaviour
     // TODO: make the set of objIDs we use a configuration option -- for use with other pres systems.
     private int[] objIDs = null;
 
-    // private constructor to make singlenton pattern work.
-    private NoisetagController()
+    // singlenton field
+    private static NoistagController _instance;
+
+    // singlenton accessor field
+    public static NoisetagController Instance
     {
-        // TODO[] : make this a *real* singlenton!!!!!
+	get { return _instance; }
     }
-    public NoisetagController getInstance()
+
+    // singlenton instantation 
+    private void Awake()
     {
-        if (instance == null)
-        {
-            instance = new NoisetagController();
-        }
-        return instance;
     }
-    // Start is called before the first frame update
-    void Start()
+        
+    // Awake is called **before** any Start methods.
+    // so we make sure the NoiseTag controller is ready before
+    // any game objects which may want to use it!
+    void Awake()
     {
-        DontDestroyOnLoad(gameObject); // keep the controller arround...
+	if (_instance != null && _instance != this)
+	    {
+		Destroy(this.gameObject);
+		return;
+	    }
+	
+	_instance = this;
+        DontDestroyOnLoad(this.gameObject); // keep the controller arround...
+
+	// Switch to 640 x 480 full-screen at 60 hz, and put
+	// VSYNC on, so we a) run fast, b) are time-accurate.
+	Screen.SetResolution(640, 480, FullScreenMode.ExclusiveFullScreen , 60);
         // FORCE!! Sync framerate to monitors refresh rate
         QualitySettings.vSyncCount = 1;
 

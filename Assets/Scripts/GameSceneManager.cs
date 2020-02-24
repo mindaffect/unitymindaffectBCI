@@ -16,11 +16,10 @@ public class GameSceneManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        NoisetagController nt = FindObjectOfType<NoisetagController>();
-        nt.startPrediction(10);
-        // return to main menu when noise tag squence is done...
-        nt.sequenceCompleteEvent.AddListener(GoMainMenu);
+        NoisetagController nt = NoisetagController.Instance;
+	nt.sequenceCompleteEvent.AddListener(GoMainMenu);
         nt.connectedEvent.AddListener(GoMainMenu);
+	
         menuObject.SetActive(false);
         calibrationObject.SetActive(false);
         predictionObject.SetActive(false);
@@ -59,13 +58,12 @@ public class GameSceneManager : MonoBehaviour
     public void GoCalibration()
     {
         setActiveObject(calibrationObject);
-        // set all the scene child objects active?
-        NoisetagController nt = FindObjectOfType<NoisetagController>();
         // make sure the flicker objects have active noisetag ids
         // N.B. this is only needed because we call startCalibration before the objects
         //      have been made visible and so get an ID themselves.
         //      If you activate the object first then this is *NOT* needed.
-        nt.acquireObjIDs(activeObject.GetComponentsInChildren<NoisetagBehaviour>());
+        NoisetagController nt = NoisetagController.Instance;
+	nt.acquireObjIDs(activeObject.GetComponentsInChildren<NoisetagBehaviour>());
         // N.B. make sure the calibration objects are active before calling this
         //      otherwise can't do the cueing as don't know how many outputs there are.
         nt.startCalibration(10);
@@ -75,7 +73,6 @@ public class GameSceneManager : MonoBehaviour
     {
         // N.B. 
         setActiveObject(predictionObject);
-        NoisetagController nt = FindObjectOfType<NoisetagController>();
         // set all the scene child objects active?
         // make sure the flicker objects have active noisetag ids
         // N.B. this is only needed because we call startCalibration before the objects
@@ -83,7 +80,7 @@ public class GameSceneManager : MonoBehaviour
         //      If you activate the object first then this is *NOT* needed.
         //nt.acquireObjIDs(activeObject.GetComponentsInChildren<NoisetagBehaviour>());
 
-        nt.startPrediction(10);
+        NoisetagController.Instance.startPrediction(10);
     }
 
     public void GoSignalQuality()

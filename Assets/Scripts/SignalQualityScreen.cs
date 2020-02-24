@@ -11,7 +11,7 @@ public class SignalQualityScreen : MonoBehaviour
     public GameObject sigQualObject;
     private GameObject[] qualArray;
     public float[] signalQualities;
-    private NoisetagController nt = null;
+    //  private NoisetagController nt = null;
     // Start is called before the first frame update
     void Start()
     {
@@ -24,11 +24,11 @@ public class SignalQualityScreen : MonoBehaviour
         {
             nt = FindObjectOfType<NoisetagController>();
         }
-        nt.modeChange("ElectrodeQuality");
+	NoisetagController.Instance.modeChange("ElectrodeQuality");
     }
     public void OnDisable()
     {
-        nt.modeChange("idle");
+        NoisetagController.Instance.modeChange("idle");
     }
 
     void update_nch(int nch)
@@ -61,7 +61,7 @@ public class SignalQualityScreen : MonoBehaviour
     {
         // TODO[] : switch to using the signalQuality event?
 
-        signalQualities = nt.getLastSignalQuality();
+        signalQualities = NoisetagController.Instance.getLastSignalQuality();
         if (signalQualities == null) return;
         if (qualArray == null ||
             signalQualities.Length != qualArray.Length )
