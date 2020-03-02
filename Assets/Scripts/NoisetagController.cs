@@ -42,6 +42,8 @@ public class NoisetagController : MonoBehaviour
     private NoisetagBehaviour[] registeredobjIDs = null;
     // TODO: make the set of objIDs we use a configuration option -- for use with other pres systems.
     private int[] objIDs = null;
+    // number for video frames to use for each code-book bit
+    public int VideoFramesPerCodeBit = 1;
 
     // singlenton field
     private static NoisetagController _instance;
@@ -224,7 +226,11 @@ public class NoisetagController : MonoBehaviour
         {
             return;
         }
+        nframe++;
+        // check if we should move on a code-book entry this frame
+        if ( nframe % VideoFramesPerCodeBit != 0) return; 
 
+        // only if this is an update frame
         stimulusState = nt.getStimulusState();
         Debug.Log(stimulusState);
         if (stimulusState != null && stimulusState.targetState >= 0)
@@ -241,7 +247,6 @@ public class NoisetagController : MonoBehaviour
         }
         nt.sendStimulusState(lastframetime);
 
-        nframe++;
         wasRunning = isRunning;
         isRunning = nt.updateStimulusState(nframe);
         if (!isRunning)
