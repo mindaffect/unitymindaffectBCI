@@ -20,11 +20,7 @@ public class SignalQualityScreen : MonoBehaviour
     // N.B. can't use onVisible/onInvisible as this doens't work for canvas objects...
     public void OnEnable()
     {
-        if (nt == null)
-        {
-            nt = FindObjectOfType<NoisetagController>();
-        }
-	NoisetagController.Instance.modeChange("ElectrodeQuality");
+	    NoisetagController.Instance.modeChange("ElectrodeQuality");
     }
     public void OnDisable()
     {

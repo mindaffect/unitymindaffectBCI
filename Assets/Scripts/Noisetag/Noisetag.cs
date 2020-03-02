@@ -583,7 +583,13 @@ namespace nl.ma.utopia
             GSM stimulusStateStack = null,
             params object[] args)
         {
-            if (objIDs == null) throw new ArgumentNullException("objIDs cannot be null");
+            //if (objIDs == null) throw new ArgumentNullException("objIDs cannot be null");
+            if (objIDs == null)
+            {
+                Console.WriteLine("Warning:: no objIDs set, bodging to make 10");
+                objIDs = new int[10]; for (int i = 0; i < objIDs.Length; i++) objIDs[i] = i + 1;
+                //throw new ArgumentNullException("objIDs cannot be null");
+            }
             this.objIDs = objIDs;
             this.stimSeq = stimSeq;
             this.nTrials = nTrials;

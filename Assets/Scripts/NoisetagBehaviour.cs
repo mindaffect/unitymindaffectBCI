@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 public class NoisetagBehaviour : MonoBehaviour
 {
-    private NoisetagController nt = null;
+
     public int myobjID = -1;
     public int mystate = -1;
 
@@ -15,10 +15,7 @@ public class NoisetagBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (nt == null)
-        {
-            nt = FindObjectOfType<NoisetagController>();
-        }
+
     }
 
     private void OnBecameVisible()
@@ -26,7 +23,7 @@ public class NoisetagBehaviour : MonoBehaviour
         // acquire objID when visible
         if (myobjID < 0)
         {
-            myobjID = nt.acquireObjID(this);
+            myobjID = NoisetagController.Instance.acquireObjID(this);
             Debug.Log("Acquired objID: " + myobjID);
         }
         mystate = -1;
@@ -37,7 +34,7 @@ public class NoisetagBehaviour : MonoBehaviour
         // release the objID
         if (myobjID > 0)
         {
-            nt.releaseObjID(myobjID);
+            NoisetagController.Instance.releaseObjID(myobjID);
             Debug.Log("Released objID: " + myobjID);
             myobjID = -1;
         }
@@ -57,7 +54,7 @@ public class NoisetagBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        mystate = nt.getObjState(myobjID);
+        mystate = NoisetagController.Instance.getObjState(myobjID);
         // do nothing if not enabled/visible
         if (mystate < 0) return;
 

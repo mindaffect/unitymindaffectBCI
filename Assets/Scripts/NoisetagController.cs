@@ -17,16 +17,16 @@ using UnityEngine.Events;
 public class NoisetagController : MonoBehaviour
 {
     // make an event systemfor relevant noise tag events..
-    public UnityEvent sequenceCompleteEvent=null;
-    public UnityEvent connectedEvent=null;
+    public UnityEvent sequenceCompleteEvent;
+    public UnityEvent connectedEvent;
     public class NewMessagesEventType : UnityEvent<List<UtopiaMessage>> { };
-    public NewMessagesEventType newMessagesEvent=null;
+    public NewMessagesEventType newMessagesEvent;
     public class NewPredictionEventType : UnityEvent<PredictedTargetProb> { };
-    public NewPredictionEventType newPredictionEvent=null;
+    public NewPredictionEventType newPredictionEvent;
     public class SelectionEventType : UnityEvent<int> { };
-    public SelectionEventType selectionEvent=null;
+    public SelectionEventType selectionEvent;
     public class SignalQualityEventType : UnityEvent<float[]> { };
-    public SignalQualityEventType signalQualityEvent=null;
+    public SignalQualityEventType signalQualityEvent;
 
     public string decoderAddress = null;
     public bool isRunning = false;
@@ -57,14 +57,14 @@ public class NoisetagController : MonoBehaviour
     // any game objects which may want to use it!
     void Awake()
     {
-	if (_instance != null && _instance != this)
+        if (_instance != null && _instance != this)
 	    {
-		Destroy(this.gameObject);
-		return;
+            Destroy(this.gameObject);
+            return;
 	    }
 	
 	_instance = this;
-        DontDestroyOnLoad(this.gameObject); // keep the controller arround...
+    DontDestroyOnLoad(this.gameObject); // keep the controller arround...
 
 	// Switch to 640 x 480 full-screen at 60 hz, and put
 	// VSYNC on, so we a) run fast, b) are time-accurate.
@@ -73,14 +73,6 @@ public class NoisetagController : MonoBehaviour
         QualitySettings.vSyncCount = 1;
 
         nt = new Noisetag(new System.IO.StringReader(codebook.text), null, null);
-
-        sequenceCompleteEvent = new UnityEvent();
-        connectedEvent = new UnityEvent();
-        newMessagesEvent = new NewMessagesEventType();
-        newPredictionEvent = new NewPredictionEventType();
-        selectionEvent = new SelectionEventType();
-        signalQualityEvent = new SignalQualityEventType();
-
 
         // setup the event handlers when the connection is up.
         // debug message handler : prints all new messages
@@ -213,16 +205,19 @@ public class NoisetagController : MonoBehaviour
         int objIdx = getObjIdx(this.objIDs, objID);
         if (objIdx >= 0) // one of ours
         {
-            registeredobjIDs[objIdx].OnSelection();
+            NoisetagBehaviour ntobj=registeredobjIDs[objIdx];
+            if ( ntobj!=null ){
+               ntobj.OnSelection();
+            }
         }
         selectionEvent.Invoke(objID);
     }
 
 
 
-    // Update is called once per frame
+    // LateUpdate is called once per frame, after all Update methods
     string logstr = "";
-    void Update()
+    void LateUpdate()
     {
         // don't bother if not connected to decoder...
         if (!nt.isConnected())
@@ -230,18 +225,6 @@ public class NoisetagController : MonoBehaviour
             return;
         }
 
-        nframe++;
-        wasRunning = isRunning;
-        isRunning = nt.updateStimulusState(nframe);
-        if (!isRunning)
-        {
-            if (wasRunning) // we have just finished a nt sequence
-            {
-                sequenceCompleteEvent.Invoke();
-            }
-            return;
-            nt.startExpt(10, 10, .1f);
-        }
         stimulusState = nt.getStimulusState();
         Debug.Log(stimulusState);
         if (stimulusState != null && stimulusState.targetState >= 0)
@@ -257,6 +240,19 @@ public class NoisetagController : MonoBehaviour
             Debug.Log(logstr); logstr = "";
         }
         nt.sendStimulusState(lastframetime);
+
+        nframe++;
+        wasRunning = isRunning;
+        isRunning = nt.updateStimulusState(nframe);
+        if (!isRunning)
+        {
+            if (wasRunning) // we have just finished a nt sequence
+            {
+                sequenceCompleteEvent.Invoke();
+            }
+            return;
+        }
+
     }
 
 
