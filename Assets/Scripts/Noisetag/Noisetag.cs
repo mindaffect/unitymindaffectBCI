@@ -583,13 +583,7 @@ namespace nl.ma.utopia
             GSM stimulusStateStack = null,
             params object[] args)
         {
-            //if (objIDs == null) throw new ArgumentNullException("objIDs cannot be null");
-            if (objIDs == null)
-            {
-                Console.WriteLine("Warning:: no objIDs set, bodging to make 10");
-                objIDs = new int[10]; for (int i = 0; i < objIDs.Length; i++) objIDs[i] = i + 1;
-                //throw new ArgumentNullException("objIDs cannot be null");
-            }
+            if (objIDs == null) throw new ArgumentNullException("objIDs cannot be null");
             this.objIDs = objIDs;
             this.stimSeq = stimSeq;
             this.nTrials = nTrials;
@@ -675,7 +669,6 @@ namespace nl.ma.utopia
                 this.utopiaController.modeChange("Prediction.static");
                 this.isRunning = true;
             }
-            this.tgti = this.tgti + 1;
             if (this.tgti < this.nTrials)
             {
                 Console.WriteLine(String.Format("Start Pred: {0:d}/{1:d}", this.tgti, this.nTrials));
@@ -693,6 +686,7 @@ namespace nl.ma.utopia
                 this.utopiaController.modeChange("idle");
                 hasNext = false;
             }
+            this.tgti = this.tgti + 1;
             return hasNext;
         }
     }
@@ -723,6 +717,7 @@ namespace nl.ma.utopia
             GSM stimulusStateStack = null,
             params object[] args)
         {
+            if (objIDs == null) throw new ArgumentNullException("objIDs cannot be null");
             this.objIDs = objIDs;
             this.stimSeq = stimSeq;
             this.nCal = nCal;
@@ -811,6 +806,10 @@ namespace nl.ma.utopia
         public int[] objIDs = null;
         public GSM stimulusStateMachineStack = null;
         public UtopiaController utopiaController = null;
+        private int nframe = 0;
+        // number of update calls per bit in the flicker code
+        //  - use this to slow down the stimulus, e.g. for debugging or slow devices such as tactile vibrators
+        public int FRAMESPERCODEBIT = 1;
 
         public Noisetag() : this(new System.IO.StreamReader("mgold_61_6521_psk_60hz.txt"), null, null) { }
         public Noisetag(System.IO.TextReader stimFile, UtopiaController utopiaController, GSM stimulusSequenceStack)
@@ -876,6 +875,10 @@ namespace nl.ma.utopia
         // stimulus sequence methods via the stimulus state machine stack
         public virtual bool updateStimulusState(int t = -1)
         {
+            nframe = nframe + 1;
+            // only move to the next codebook entry every FramesPerCodeBit calls..
+            if (nframe % Math.Max(FRAMESPERCODEBIT,1) != 0) return true;
+
             bool hasNext = this.stimulusStateMachineStack.next(t);
             if (hasNext)
             {

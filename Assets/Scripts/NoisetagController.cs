@@ -42,8 +42,8 @@ public class NoisetagController : MonoBehaviour
     private NoisetagBehaviour[] registeredobjIDs = null;
     // TODO: make the set of objIDs we use a configuration option -- for use with other pres systems.
     private int[] objIDs = null;
-    // number for video frames to use for each code-book bit
-    public int VideoFramesPerCodeBit = 1;
+    // number of video frames per noisetag codebit
+    public int FRAMESPERCODEBIT = 1;
 
     // singlenton field
     private static NoisetagController _instance;
@@ -51,7 +51,7 @@ public class NoisetagController : MonoBehaviour
     // singlenton accessor field
     public static NoisetagController Instance
     {
-	get { return _instance; }
+        get { return _instance; }
     }
 
     // Awake is called **before** any Start methods.
@@ -60,17 +60,16 @@ public class NoisetagController : MonoBehaviour
     void Awake()
     {
         if (_instance != null && _instance != this)
-	    {
+        {
             Destroy(this.gameObject);
             return;
-	    }
-	
-	_instance = this;
-    DontDestroyOnLoad(this.gameObject); // keep the controller arround...
+        }
+        _instance = this;
+        DontDestroyOnLoad(this.gameObject); // keep the controller arround...
 
-	// Switch to 640 x 480 full-screen at 60 hz, and put
-	// VSYNC on, so we a) run fast, b) are time-accurate.
-	Screen.SetResolution(640, 480, FullScreenMode.ExclusiveFullScreen , 60);
+        // Switch to 640 x 480 full-screen at 60 hz, and put
+        // VSYNC on, so we a) run fast, b) are time-accurate.
+        Screen.SetResolution(1280, 780, FullScreenMode.ExclusiveFullScreen, 60);
         // FORCE!! Sync framerate to monitors refresh rate
         QualitySettings.vSyncCount = 1;
 
@@ -104,28 +103,32 @@ public class NoisetagController : MonoBehaviour
         StartCoroutine(recordFrameTime());
 
         // magic co-routine to make the initial decoder connection
-        StartCoroutine(TryToConnect());
+        StartCoroutine(KeepTryingToConnect());
     }
 
-    // add a coroutine to record exact time-stamps for the frame rendering..
-    public IEnumerator TryToConnect()
+    // Keep trying to connect until successful
+    public IEnumerator KeepTryingToConnect()
     {
         while (!isConnected())
         {
-                // TODO [] : This is evil as it blocks the main graphics thread for 500ms!!
-                //     should refactor nt into a co-routine? to not block in this way...
-                Debug.Log("Trying to connect to : " + decoderAddress);
-                // TODO [] : Add a user query if the connection doesn't work for too long.
-                nt.connect(decoderAddress, -1, 500);
-                if (nt.isConnected())
-                {
-                    Debug.Log("Connected to " + nt.getHostPort());
-                    connectedEvent.Invoke();
-                }
-                yield return null;
+            tryToConnect(1);
+            yield return new WaitForSeconds(.5f);
         }
     }
-    
+
+    public void tryToConnect(int timeout_ms)
+    {
+        // TODO [x] : This is evil as it blocks the main graphics thread for 500ms!!
+        //     should refactor nt into a co-routine? to not block in this way...
+        Debug.Log("Trying to connect to : " + decoderAddress);
+        // TODO [] : Add a user query if the connection doesn't work for too long.
+        nt.connect(decoderAddress, -1, timeout_ms);
+        if (nt.isConnected())
+        {
+            Debug.Log("Connected to " + nt.getHostPort());
+            if ( connectedEvent != null ) connectedEvent.Invoke();
+        }
+    }
 
     public bool isConnected()
     {
@@ -139,12 +142,12 @@ public class NoisetagController : MonoBehaviour
     // Modify the decoder address we are trying to connect to.
     public void setDecoderAddress(string newaddress)
     {
-        if ( isConnected() )
+        if (isConnected())
         {
             Debug.Log("Warning: already connected....");
         }
         decoderAddress = newaddress;
-        StartCoroutine(TryToConnect());
+        StartCoroutine(KeepTryingToConnect());
     }
 
     public void modeChange(string newmode)
@@ -192,45 +195,55 @@ public class NoisetagController : MonoBehaviour
             Debug.Log(m);
         }
         // make a general unity event
-        newMessagesEvent.Invoke(msgs);
+        if (newMessagesEvent != null) newMessagesEvent.Invoke(msgs);
     }
     public void newPredictionHandler(PredictedTargetProb m)
     {
-        newPredictionEvent.Invoke(m);
+        if (newPredictionEvent != null) newPredictionEvent.Invoke(m);
     }
     public void signalQualityHandler(float[] qualities)
     {
-        signalQualityEvent.Invoke(qualities);
+        if (signalQualityEvent != null) signalQualityEvent.Invoke(qualities);
     }
     public void selectionHandler(int objID)
     {
         int objIdx = getObjIdx(this.objIDs, objID);
         if (objIdx >= 0) // one of ours
         {
-            NoisetagBehaviour ntobj=registeredobjIDs[objIdx];
-            if ( ntobj!=null ){
-               ntobj.OnSelection();
-            }
+            NoisetagBehaviour selobj = registeredobjIDs[objIdx];
+            if ( selobj !=null ) selobj.OnSelection();
         }
-        selectionEvent.Invoke(objID);
+        if (selectionEvent != null) selectionEvent.Invoke(objID);
     }
 
 
 
-    // LateUpdate is called once per frame, after all Update methods
+    // Update is called once per frame
     string logstr = "";
-    void LateUpdate()
+    void Update()
     {
         // don't bother if not connected to decoder...
         if (!nt.isConnected())
         {
-            return;
+            tryToConnect(1); // fast connection retry?
+            if (!nt.isConnected()) return;
         }
-        nframe++;
-        // check if we should move on a code-book entry this frame
-        if ( nframe % VideoFramesPerCodeBit != 0) return; 
 
-        // only if this is an update frame
+        nframe++;
+        // don't update the code-stuff if in slowdown mode..
+        if (nframe % Math.Max(FRAMESPERCODEBIT,1) != 0) return; 
+
+        wasRunning = isRunning;
+        isRunning = nt.updateStimulusState(nframe);
+        if (!isRunning)
+        {
+            if (wasRunning && sequenceCompleteEvent!=null) // we have just finished a nt sequence
+            {
+                sequenceCompleteEvent.Invoke();
+            }
+            return;
+            nt.startExpt(10, 10, .1f);
+        }
         stimulusState = nt.getStimulusState();
         Debug.Log(stimulusState);
         if (stimulusState != null && stimulusState.targetState >= 0)
@@ -246,18 +259,6 @@ public class NoisetagController : MonoBehaviour
             Debug.Log(logstr); logstr = "";
         }
         nt.sendStimulusState(lastframetime);
-
-        wasRunning = isRunning;
-        isRunning = nt.updateStimulusState(nframe);
-        if (!isRunning)
-        {
-            if (wasRunning) // we have just finished a nt sequence
-            {
-                sequenceCompleteEvent.Invoke();
-            }
-            return;
-        }
-
     }
 
 

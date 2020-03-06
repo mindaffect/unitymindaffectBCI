@@ -20,7 +20,7 @@ public class SignalQualityScreen : MonoBehaviour
     // N.B. can't use onVisible/onInvisible as this doens't work for canvas objects...
     public void OnEnable()
     {
-	    NoisetagController.Instance.modeChange("ElectrodeQuality");
+        NoisetagController.Instance.modeChange("ElectrodeQuality");
     }
     public void OnDisable()
     {
@@ -39,13 +39,13 @@ public class SignalQualityScreen : MonoBehaviour
         float z = (botright.z + topleft.z) / 2f;
         float w = System.Math.Abs(botright.x - topleft.x);
         float h = System.Math.Abs(botright.y - topleft.y);
-        float stepx = w / (nch+1);
+        float stepx = w / (nch + 1);
         float step = stepx;
         qualArray = new GameObject[nch];
         for (int i = 0; i < nch; i++)
         {
             // N.B. objects are positioned relative to the *CENTER* of the object.
-            Vector3 newPos = new Vector3(topleft.x + (i+1) * step, y, z);
+            Vector3 newPos = new Vector3(topleft.x + (i + 1) * step, y, z);
             qualArray[i] = Instantiate(sigQualObject, newPos, Quaternion.identity, transform);
             qualArray[i].SetActive(true);
             // TODO [] : put the channel label text in front
@@ -60,7 +60,7 @@ public class SignalQualityScreen : MonoBehaviour
         signalQualities = NoisetagController.Instance.getLastSignalQuality();
         if (signalQualities == null) return;
         if (qualArray == null ||
-            signalQualities.Length != qualArray.Length )
+            signalQualities.Length != qualArray.Length)
         {
             // update the channel montage
             update_nch(signalQualities.Length);

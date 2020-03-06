@@ -17,9 +17,11 @@ public class GameSceneManager : MonoBehaviour
     void Start()
     {
         NoisetagController nt = NoisetagController.Instance;
-	nt.sequenceCompleteEvent.AddListener(GoMainMenu);
-        nt.connectedEvent.AddListener(GoMainMenu);
-	
+        // add these listeners from the GUI
+        //nt.sequenceCompleteEvent.AddListener(GoMainMenu);
+        //nt.connectedEvent.AddListener(GoMainMenu);
+        //nt.startPrediction(1); // test starting prediction early + button selection
+
         menuObject.SetActive(false);
         calibrationObject.SetActive(false);
         predictionObject.SetActive(false);
@@ -29,7 +31,9 @@ public class GameSceneManager : MonoBehaviour
         if (nt.isConnected())
         {
             GoMainMenu();
-        } else {
+        }
+        else
+        {
             GoConnecting();
         }
     }
@@ -63,7 +67,7 @@ public class GameSceneManager : MonoBehaviour
         //      have been made visible and so get an ID themselves.
         //      If you activate the object first then this is *NOT* needed.
         NoisetagController nt = NoisetagController.Instance;
-	nt.acquireObjIDs(activeObject.GetComponentsInChildren<NoisetagBehaviour>());
+        nt.acquireObjIDs(activeObject.GetComponentsInChildren<NoisetagBehaviour>());
         // N.B. make sure the calibration objects are active before calling this
         //      otherwise can't do the cueing as don't know how many outputs there are.
         nt.startCalibration(10);

@@ -3,22 +3,33 @@ using System.Collections.Generic;
 using UnityEngine;
 using nl.ma.utopia;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class NoisetagBehaviour : MonoBehaviour
 {
-
     public int myobjID = -1;
     public int mystate = -1;
+    public bool isVisible = false;
 
     public UnityEvent selectedEvent;
-    // TODO: add an event for when the state is updated? rather than direct object change here?
     // Start is called before the first frame update
     void Start()
     {
-
+        // TODO[] search for the color children of this object to be NT changed when started
+        // to save findobjbytype stuff...
     }
 
-    private void OnBecameVisible()
+    public void OnEnable()
+    {
+        isVisible = true;
+    }
+
+    public void OnBecameVisible()
+    {
+        isVisible = true;
+    }
+
+    public void acquireNoisetagObjID()
     {
         // acquire objID when visible
         if (myobjID < 0)
@@ -29,7 +40,17 @@ public class NoisetagBehaviour : MonoBehaviour
         mystate = -1;
     }
 
+    public void OnDisable()
+    {
+        releaseNoisetagObjID();
+    }
+
     public void OnBecameInvisible()
+    {
+        releaseNoisetagObjID();
+    }
+
+    public void releaseNoisetagObjID()
     {
         // release the objID
         if (myobjID > 0)
@@ -39,6 +60,7 @@ public class NoisetagBehaviour : MonoBehaviour
             myobjID = -1;
         }
         mystate = -1;
+        isVisible = false;
     }
 
     public void OnSelection()
@@ -52,15 +74,51 @@ public class NoisetagBehaviour : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    public void Update()
     {
+        if( myobjID<0 && isVisible)
+        {
+            acquireNoisetagObjID();
+        }
         mystate = NoisetagController.Instance.getObjState(myobjID);
         // do nothing if not enabled/visible
         if (mystate < 0) return;
 
+
+        updateRendererColor();
+        updateButtonColor();
+    }
+
+    public void updateRendererColor()
+    {
         Renderer r = gameObject.GetComponent<MeshRenderer>();
+        if (r == null) return;
         // change the color of all material below this gameobject
         foreach (Material m in r.materials)
+        {
+            if (mystate == 0)
+            {
+                m.color = Color.black;
+            }
+            else if (mystate == 1)
+            {
+                m.color = Color.white;
+            }
+            else if (mystate == 2)
+            {
+                m.color = Color.green;
+            }
+            else if (mystate == 3)
+            {
+                m.color = Color.blue;
+            }
+        }
+    }
+
+    public void updateButtonColor()
+    {
+        // change the color of all material below this gameobject
+        foreach (Image m in gameObject.GetComponents<Image>())
         {
             if (mystate == 0)
             {

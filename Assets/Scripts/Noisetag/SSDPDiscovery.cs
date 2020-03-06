@@ -26,68 +26,90 @@ public class SSDPDiscovery
   /// </summary>
   private const int multicastPort=1900;
 
-  static public List<Dictionary<string,string>> ssdpDiscover(string serviceType, int timeout)
-  {
-    var devices = new List<Dictionary<string,string>>();
-    string request = string.Format(searchRequest, multicastIP, multicastPort,timeout,serviceType);
+    string serviceType;
+    byte[] msearchMessage;
+    UdpClient udpClient=null;
+    float querytime=-1;
 
-    // send the request
-    using (var udpClient = new UdpClient(AddressFamily.InterNetwork))
+    public SSDPDiscovery(string serviceType,int timeout=5000){
+	this.serviceType=serviceType;
+	string request = string.Format(searchRequest, multicastIP, multicastPort,timeout,serviceType);
+	this.msearchMessage = System.Text.Encoding.UTF8.GetBytes(request);
+	// BODGE: make sure last query time was long ago...
+	this.querytime=getAbsTime_ms()-100000;
+    }
+    
+    public UdpClient initSocket(){
+	var address = IPAddress.Parse(multicastIP);
+	var ipEndPoint = new IPEndPoint(address, multicastPort);
+	udpClient = new UdpClient(AddressFamily.InterNetwork);
+	udpClient.JoinMulticastGroup(address);
+	return udpClient;
+    }
+    
+    public List<Dictionary<string,string>> discover(int timeout=1000)
     {
-      var address = IPAddress.Parse(multicastIP);
-      var ipEndPoint = new IPEndPoint(address, multicastPort);
-      udpClient.JoinMulticastGroup(address);
-      byte[] req = System.Text.Encoding.UTF8.GetBytes(request);
-      Console.WriteLine("Sending query: " + request);      
-      udpClient.Send(req, req.Length, ipEndPoint);
-      
-      // When the initial multicast is done, get ready to receive responses
-      ipEndPoint = new IPEndPoint(IPAddress.Any, 0);
-      var t0=getAbsTime();
-      Console.WriteLine("Awaiting responses:");
-      while ( getAbsTime()-t0 < timeout ) {
-        try {
-          int timetogo = timeout - (int)(getAbsTime()-t0);
-          udpClient.Client.ReceiveTimeout=timetogo;
-          var data = udpClient.Receive(ref ipEndPoint);
-          // Got a response, so decode it
-          string result = Encoding.UTF8.GetString(data);
-          Console.WriteLine("Got response: " + result.ToString());
-          if (result.StartsWith("HTTP/1.1 200 OK", StringComparison.InvariantCultureIgnoreCase))
-            {
-              //parse device
-              Dictionary<string,string> resp=ParseSSDPResponse(result);
-              //Console.WriteLine("Parsed Response");
-              //foreach ( KeyValuePair<string,string> kvp in resp ) {
-              //  Console.WriteLine("{0}:{1}",kvp.Key,kvp.Value);
-              //}
-              // check for match
-              if ( ( resp.ContainsKey("st") && resp["st"].Contains(serviceType) ) ||
-                   (resp.ContainsKey("server") && resp["server"].Contains(serviceType)) ) {
-                // add to response list
-                devices.Add(resp);          
-              }
+	var devices = new List<Dictionary<string,string>>();
+	if ( udpClient == null ) {
+	    initSocket();
+	}
+    
+	// send the request
+	if( querytime + timeout < getAbsTime_ms() ) {
+	    Console.WriteLine("Sending query: ");      
+	    IPEndPoint sendEndPoint = new IPEndPoint(IPAddress.Parse(multicastIP), multicastPort);
+	    udpClient.Send(msearchMessage, msearchMessage.Length, sendEndPoint);
+	    querytime = getAbsTime_ms();
+
+	}
+	// When the initial multicast is done, get ready to receive responses
+	IPEndPoint recieveEndPoint = new IPEndPoint(IPAddress.Any, 0);
+	Console.WriteLine("Awaiting responses:");
+	udpClient.Client.ReceiveTimeout=timeout;
+	var data = udpClient.Receive(ref recieveEndPoint);
+	// Got a response, so decode it
+	string result = Encoding.UTF8.GetString(data);
+	Console.WriteLine("Got response: " + result.ToString());
+	if (result.StartsWith("HTTP/1.1 200 OK", StringComparison.InvariantCultureIgnoreCase))
+	    {
+		//parse device
+		Dictionary<string,string> resp=ParseSSDPResponse(result);
+		// check for match
+		if ( ( resp.ContainsKey("st") && resp["st"].Contains(serviceType) ) ||
+		     (resp.ContainsKey("server") && resp["server"].Contains(serviceType)) ) {
+		    // add to response list
+		    devices.Add(resp);          
+		}
             }
         else
-          {
-            //Debug.WriteLine("INVALID SEARCH RESPONSE");
-          }
-        } catch ( SocketException ) {
-          break;
-        }
-      }
-      udpClient.Close();
+	    {
+		//Debug.WriteLine("INVALID SEARCH RESPONSE");
+	    }
+	return devices;
     }
-    return devices;
+  
+  public static long getAbsTime_ms(){
+      return (long)(Stopwatch.GetTimestamp()*1000.0/Stopwatch.Frequency);
   }
   
-  public static long getAbsTime(){
-    return Stopwatch.GetTimestamp()/Stopwatch.Frequency;
-  }
-  
+
+    public static List<Dictionary<string,string>> ssdpDiscover(string servicetype, int timeout){
+	SSDPDiscovery dis=new SSDPDiscovery(servicetype);
+	var tend=getAbsTime_ms()+timeout;
+	int ttg =timeout;
+	while ( ttg>0 ) {
+	    var devices = dis.discover(ttg);
+	    if( devices.Count>0 ) {
+		// TODO: accumulate the devices lists
+		return devices;
+	    }
+	    ttg=(int)(tend-getAbsTime_ms());
+	}
+	return null;
+    }
   
   // Probably not exactly compliant with RFC 2616 but good enough for now
-  private static Dictionary<string, string> ParseSSDPResponse(string response)
+  private Dictionary<string, string> ParseSSDPResponse(string response)
     {
       StringReader reader = new StringReader(response);
       
@@ -122,13 +144,16 @@ public class SSDPDiscovery
     }
   
   public static void Main(string[] argv) {
-    var devices = SSDPDiscovery.ssdpDiscover("ssdp:all",10000);
-    foreach ( var dev in devices ) {
-      Console.WriteLine("Device");
-      foreach ( KeyValuePair<string,string> kvp in dev ) {
-        Console.WriteLine("{0}:{1}",kvp.Key,kvp.Value);
+      SSDPDiscovery dis=new SSDPDiscovery("ssdp:all");
+      while ( true ){
+	  List<Dictionary<string,string>> devices=dis.discover();
+	  foreach ( var dev in devices ) {
+	      Console.WriteLine("Device");
+	      foreach ( KeyValuePair<string,string> kvp in dev ) {
+		  Console.WriteLine("{0}:{1}",kvp.Key,kvp.Value);
+	      }
+	  }
       }
-    }
   }
 };
 

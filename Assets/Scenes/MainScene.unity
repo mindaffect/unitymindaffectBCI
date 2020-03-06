@@ -584,6 +584,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myobjID: -1
   mystate: -1
+  isVisible: 0
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -676,16 +677,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sequenceCompleteEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 568270977}
+        m_MethodName: GoMainMenu
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   connectedEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 568270977}
+        m_MethodName: GoMainMenu
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   decoderAddress: 
   isRunning: 0
   nframe: 0
   ISI: 60
   lastframetime: 0
   codebook: {fileID: 4900000, guid: 0b3fec475bd5e5343b9be09135ff98fe, type: 3}
+  FRAMESPERCODEBIT: 1
 --- !u!4 &333924877
 Transform:
   m_ObjectHideFlags: 0
@@ -806,6 +830,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myobjID: -1
   mystate: -1
+  isVisible: 0
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -857,6 +882,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myobjID: -1
   mystate: -1
+  isVisible: 0
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -1046,6 +1072,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myobjID: -1
   mystate: -1
+  isVisible: 0
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -1097,6 +1124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myobjID: -1
   mystate: -1
+  isVisible: 0
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -1719,6 +1747,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myobjID: -1
   mystate: -1
+  isVisible: 0
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -2064,6 +2093,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myobjID: -1
   mystate: -1
+  isVisible: 0
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -2173,6 +2203,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myobjID: -1
   mystate: -1
+  isVisible: 0
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -2385,6 +2416,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myobjID: -1
   mystate: -1
+  isVisible: 0
   selectedEvent:
     m_PersistentCalls:
       m_Calls:
@@ -2509,6 +2541,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myobjID: -1
   mystate: -1
+  isVisible: 0
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -2772,6 +2805,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myobjID: -1
   mystate: -1
+  isVisible: 0
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -3053,6 +3087,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myobjID: -1
   mystate: -1
+  isVisible: 0
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -3104,6 +3139,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myobjID: -1
   mystate: -1
+  isVisible: 0
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -3213,6 +3249,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myobjID: -1
   mystate: -1
+  isVisible: 0
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -3493,6 +3530,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myobjID: 0
   mystate: -1
+  isVisible: 0
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
