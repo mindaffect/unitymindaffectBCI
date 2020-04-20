@@ -1109,6 +1109,15 @@ namespace nl.ma.utopia
                          sendEvents));
         }
 
+        public void stopFlicker()
+        {
+            if (this.stimulusStateMachineStack.stack.Count > 0)
+            {
+                Console.WriteLine("Warning: replacing running sequence?");
+            }
+            this.stimulusStateMachineStack.clear();
+        }
+
 
 
         public static void newMessageHandler(List<UtopiaMessage> msgs)

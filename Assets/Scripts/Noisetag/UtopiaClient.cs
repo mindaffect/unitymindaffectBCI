@@ -34,6 +34,7 @@ namespace nl.ma.utopiaserver {
         ByteBuffer tmpbuffer;
 
         TimeStampClock tsclock;
+	private SSDPDiscovery ssdpDiscovery;
 
         public UtopiaClient() {
             this.tsclock = new TimeStampClock();
@@ -42,6 +43,7 @@ namespace nl.ma.utopiaserver {
             this.inbuffer = ByteBuffer.allocate(MAXBUFFERSIZE);
             this.nextHeartbeatTime = getTimeStamp();
             this.nextHeartbeatTimeUDP = getTimeStamp();
+	    this.ssdpDiscovery = null; 
         }
 
 	// TODO: make timeout work correctly
@@ -57,7 +59,10 @@ namespace nl.ma.utopiaserver {
 		{
 		    // auto-search for host port
 		    Console.WriteLine("Trying SSDP discovery");
-		    var devices = SSDPDiscovery.ssdpDiscover("utopia/1.1", timeout_ms);
+		    if( ssdpDiscovery==null ) {// create if needed
+		    	ssdpDiscovery=new SSDPDiscovery("utopia/1.1");
+		    }
+		    var devices = ssdpDiscovery.discover(timeout_ms);
 		    Console.WriteLine("Discovered " + devices.Count() + " devices");
 		    if (devices.Any())
 			{
@@ -327,6 +332,14 @@ namespace nl.ma.utopiaserver {
 	    {
 		//  PREDICTEDTARGETPROB
 		PredictedTargetProb e = new PredictedTargetProb(utopiaClient.getTimeStamp(), 1, ((float)(0.99)));
+		Console.WriteLine("Sending: "  + e.ToString() + " -> server");
+		utopiaClient.sendMessage(e);
+		System.Threading.Thread.Sleep(1000);
+	    }
+		
+	    {
+		//  PREDICTEDTARGETDIST
+		PredictedTargetDist e = new PredictedTargetDist(utopiaClient.getTimeStamp(), new int[]{1,2,3}, new float[]{.1f,.2f,.3f});
 		Console.WriteLine("Sending: "  + e.ToString() + " -> server");
 		utopiaClient.sendMessage(e);
 		System.Threading.Thread.Sleep(1000);

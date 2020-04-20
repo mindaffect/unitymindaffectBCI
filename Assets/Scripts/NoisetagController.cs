@@ -126,6 +126,7 @@ public class NoisetagController : MonoBehaviour
         if (nt.isConnected())
         {
             Debug.Log("Connected to " + nt.getHostPort());
+            nt.modeChange("idle");
             if ( connectedEvent != null ) connectedEvent.Invoke();
         }
     }
@@ -174,6 +175,10 @@ public class NoisetagController : MonoBehaviour
     public void startFlickerWithSelection(float selectionThreshold, float duration = 10, int tgtidx = -1)
     {
         nt.startFlickerWithSelection((int)(duration / ISI), tgtidx, true, selectionThreshold);
+    }
+    public void stopFlicker()
+    {
+        nt.stopFlicker();
     }
 
     // add a coroutine to record exact time-stamps for the frame rendering..

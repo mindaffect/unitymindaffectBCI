@@ -12,12 +12,14 @@ public class GameSceneManager : MonoBehaviour
     public GameObject connectingObject;
     public GameObject signalQualityObject;
     public GameObject activeObject = null;
+    public int nCalibrationTrials=10;
+    public int nPredictionTrials=10;
 
     // Start is called before the first frame update
     void Start()
     {
         NoisetagController nt = NoisetagController.Instance;
-        // add these listeners from the GUI
+        // N.B. add these listeners from the GUI
         //nt.sequenceCompleteEvent.AddListener(GoMainMenu);
         //nt.connectedEvent.AddListener(GoMainMenu);
         //nt.startPrediction(1); // test starting prediction early + button selection
@@ -52,6 +54,7 @@ public class GameSceneManager : MonoBehaviour
     public void GoMainMenu()
     {
         setActiveObject(menuObject);
+        NoisetagController.Instance.stopFlicker();
     }
 
     public void GoConnecting()
@@ -70,7 +73,7 @@ public class GameSceneManager : MonoBehaviour
         nt.acquireObjIDs(activeObject.GetComponentsInChildren<NoisetagBehaviour>());
         // N.B. make sure the calibration objects are active before calling this
         //      otherwise can't do the cueing as don't know how many outputs there are.
-        nt.startCalibration(10);
+        nt.startCalibration(nCalibrationTrials);
     }
 
     public void GoPrediction()
@@ -84,7 +87,7 @@ public class GameSceneManager : MonoBehaviour
         //      If you activate the object first then this is *NOT* needed.
         //nt.acquireObjIDs(activeObject.GetComponentsInChildren<NoisetagBehaviour>());
 
-        NoisetagController.Instance.startPrediction(10);
+        NoisetagController.Instance.startPrediction(nPredictionTrials);
     }
 
     public void GoSignalQuality()

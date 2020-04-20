@@ -106,6 +106,14 @@ namespace nl.ma.utopiaserver.messages {
 
                  evt = PredictedTargetProb.deserialize(this.msgbuffer);
              }
+             else if ((this.msgID == PredictedTargetDist.MSGID)) {
+                 if ((VERBOSITY > 2)) {
+                     System.Console.WriteLine("Trying to read "
+                                       + PredictedTargetDist.MSGNAME + " message");
+                 }
+
+                 evt = PredictedTargetDist.deserialize(this.msgbuffer);
+             }
             else if ((this.msgID == ModeChange.MSGID)) {
                 if ((VERBOSITY > 2)) {
                     System.Console.WriteLine("Trying to read " + ModeChange.MSGNAME + " message");
