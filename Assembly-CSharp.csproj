@@ -68,6 +68,7 @@
     <Compile Include="Assets\Scripts\Noisetag\messages\Log.cs" />
     <Compile Include="Assets\Scripts\Noisetag\messages\ModeChange.cs" />
     <Compile Include="Assets\Scripts\Noisetag\messages\NewTarget.cs" />
+    <Compile Include="Assets\Scripts\Noisetag\messages\PredictedTargetDist.cs" />
     <Compile Include="Assets\Scripts\Noisetag\messages\PredictedTargetProb.cs" />
     <Compile Include="Assets\Scripts\Noisetag\messages\RawMessage.cs" />
     <Compile Include="Assets\Scripts\Noisetag\messages\Reset.cs" />
