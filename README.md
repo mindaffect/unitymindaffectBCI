@@ -1,5 +1,8 @@
 mindaffectBCI
 =============
+
+[![Join the chat at https://gitter.im/mindaffect/unitymindaffectBCI](https://badges.gitter.im/mindaffect/unitymindaffectBCI.svg)](https://gitter.im/mindaffect/unitymindaffectBCI?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This repository contains the [unity](unity.com) SDK code for the Brain Computer Interface (BCI) developed by the company [Mindaffect](https://mindaffect.nl).
 
 File Structure
