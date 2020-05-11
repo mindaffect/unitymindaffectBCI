@@ -21,18 +21,11 @@ Installing mindaffectBCI
 
 That's easy, download this repository and launch the project with unity.
 
-Support
--------
-
-[![Join the chat at https://gitter.im/mindaffect/unitymindaffectBCI](https://badges.gitter.im/mindaffect/unitymindaffectBCI.svg)](https://gitter.im/mindaffect/unitymindaffectBCI?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-
-
 Getting Support
 ---------------
 
 If you run into and issue you can either directly raise an issue on the projects [github page](https://github.com/mindaffect/pymindaffectBCI) or directly contact the developers on [gitter](https://gitter.im/mindaffect) -- to complain, complement, or just chat:
-[![badge](https://badges.gitter.im/mindaffect/unitymindaffectBCI.svg](https://gitter.im/mindaffect/pymindaffectBCI?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/mindaffect/unitymindaffectBCI](https://badges.gitter.im/mindaffect/unitymindaffectBCI.svg)](https://gitter.im/mindaffect/unitymindaffectBCI?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Testing the mindaffectBCI SDK
 -----------------------------
