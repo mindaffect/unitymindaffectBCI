@@ -24,7 +24,7 @@ That's easy, download this repository and launch the project with unity.
 Getting Support
 ---------------
 
-If you run into and issue you can either directly raise an issue on the projects [github page](https://github.com/mindaffect/pymindaffectBCI) or directly contact the developers on [gitter](https://gitter.im/mindaffect) -- to complain, complement, or just chat:
+If you run into and issue you can either directly raise an issue on the projects [github page](https://github.com/mindaffect/unitymindaffectBCI) or directly contact the developers on [gitter](https://gitter.im/mindaffect) -- to complain, complement, or just chat:
 [![Join the chat at https://gitter.im/mindaffect/unitymindaffectBCI](https://badges.gitter.im/mindaffect/unitymindaffectBCI.svg)](https://gitter.im/mindaffect/unitymindaffectBCI?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Testing the mindaffectBCI SDK
@@ -65,8 +65,8 @@ The mindaffectBCI consists of 3 main pieces:
 
  - *output* : This piece, normally runs on the same location as the  presentation, but may be somewhere else, and also connects to the decoder.  It listens from 'selections' from the decoder, which indicate that the decoder has decided the user want's to pick a particular option,  and makes that  selection happen -- for example by adding a letter to the current sentence, or moving a robot-arm,  or turning on or off a light.
 
-The  detailed  system architeture of the mindaffecBCI is explained in more detail in [doc/Utopia _ Guide for Implementation of new Presentation and Output Components.pdf](https://github.com/mindaffect/pymindaffectBCI/blob/master/doc/Utopia%20_%20Guide%20for%20Implementation%20of%20new%20Presentation%20and%20Output%20components.pdf), and is illustrated in this figure:
-![doc/SystemArchitecture.png](https://github.com/mindaffect/pymindaffectBCI/blob/master/doc/SystemArchitecture.png)
+The  detailed  system architeture of the mindaffecBCI is explained in more detail in [doc/Utopia _ Guide for Implementation of new Presentation and Output Components.pdf](https://github.com/mindaffect/unitymindaffectBCI/blob/master/doc/Utopia%20_%20Guide%20for%20Implementation%20of%20new%20Presentation%20and%20Output%20components.pdf), and is illustrated in this figure:
+![doc/SystemArchitecture.png](https://github.com/mindaffect/unitymindaffectBCI/blob/master/doc/SystemArchitecture.png)
 
 
 
