@@ -25,6 +25,7 @@ public class NoisetagController : MonoBehaviour
     public NewPredictionEventType newPredictionEvent;
     public class SelectionEventType : UnityEvent<int> { };
     public SelectionEventType selectionEvent;
+    public UnityEvent newTargetEvent;
     public class SignalQualityEventType : UnityEvent<float[]> { };
     public SignalQualityEventType signalQualityEvent;
 
@@ -69,7 +70,7 @@ public class NoisetagController : MonoBehaviour
 
         // Switch to 640 x 480 full-screen at 60 hz, and put
         // VSYNC on, so we a) run fast, b) are time-accurate.
-        Screen.SetResolution(1280, 780, FullScreenMode.ExclusiveFullScreen, 60);
+        Screen.SetResolution(1280, 720, FullScreenMode.ExclusiveFullScreen, 60);
         // FORCE!! Sync framerate to monitors refresh rate
         QualitySettings.vSyncCount = 1;
 
@@ -81,6 +82,7 @@ public class NoisetagController : MonoBehaviour
         nt.addSelectionHandler(selectionHandler);
         nt.addPredictionHandler(newPredictionHandler);
         nt.addSignalQualityHandler(signalQualityHandler);
+        nt.addNewTargetHandler(newTargetHandler);
 
         // init the info on the set of objIDs we are managing..
         if (objIDs == null)
@@ -102,23 +104,28 @@ public class NoisetagController : MonoBehaviour
         // magic co-routine to record accurately the time the last frame was drawn
         StartCoroutine(recordFrameTime());
 
-        // magic co-routine to make the initial decoder connection
+        // magic co-routine to make and maintain the decoder connection
         StartCoroutine(KeepTryingToConnect());
     }
 
     // Keep trying to connect until successful
     public IEnumerator KeepTryingToConnect()
     {
-        while (!isConnected())
+        // run forever, so auto-reconnect if connection is dropped
+        while (true)
         {
-            tryToConnect(1);
+            if (!nt.isConnected())
+            {
+                tryToConnect(1);
+            }
+            // check again in .5s
             yield return new WaitForSeconds(.5f);
         }
     }
 
     public void tryToConnect(int timeout_ms)
     {
-        // TODO [x] : This is evil as it blocks the main graphics thread for 500ms!!
+        // TODO [x] : This is evil as it blocks the main graphics thread
         //     should refactor nt into a co-routine? to not block in this way...
         Debug.Log("Trying to connect to : " + decoderAddress);
         // TODO [] : Add a user query if the connection doesn't work for too long.
@@ -168,9 +175,9 @@ public class NoisetagController : MonoBehaviour
     {
         nt.startCalibration(nTrials);
     }
-    public void startPrediction(int nTrials = 10)
+    public void startPrediction(int nTrials = 10, bool cuedPrediction=false)
     {
-        nt.startPrediction(nTrials);
+        nt.startPrediction(nTrials,null,cuedPrediction);
     }
     public void startFlickerWithSelection(float selectionThreshold, float duration = 10, int tgtidx = -1)
     {
@@ -204,6 +211,12 @@ public class NoisetagController : MonoBehaviour
     }
     public void newPredictionHandler(PredictedTargetProb m)
     {
+        int objIdx = getObjIdx(this.objIDs, m.Yest);
+        if (objIdx >= 0) // one of ours
+        {
+            NoisetagBehaviour obj = registeredobjIDs[objIdx];
+            if (obj != null) obj.OnPrediction(m.Perr);
+        }
         if (newPredictionEvent != null) newPredictionEvent.Invoke(m);
     }
     public void signalQualityHandler(float[] qualities)
@@ -220,7 +233,14 @@ public class NoisetagController : MonoBehaviour
         }
         if (selectionEvent != null) selectionEvent.Invoke(objID);
     }
-
+    public void newTargetHandler()
+    {
+        foreach ( NoisetagBehaviour obj in registeredobjIDs)
+        {
+            if ( obj != null )
+                obj.OnNewTarget();
+        }
+    }
 
 
     // Update is called once per frame
@@ -228,10 +248,10 @@ public class NoisetagController : MonoBehaviour
     void Update()
     {
         // don't bother if not connected to decoder...
-        if (!nt.isConnected())
+        if (!this.nt.isConnected())
         {
-            tryToConnect(1); // fast connection retry?
-            if (!nt.isConnected()) return;
+            Debug.Log("Noise-tag is not connected!");
+            return;
         }
 
         nframe++;
@@ -239,7 +259,7 @@ public class NoisetagController : MonoBehaviour
         if (nframe % Math.Max(FRAMESPERCODEBIT,1) != 0) return; 
 
         wasRunning = isRunning;
-        isRunning = nt.updateStimulusState(nframe);
+        isRunning = this.nt.updateStimulusState(nframe);
         if (!isRunning)
         {
             if (wasRunning && sequenceCompleteEvent!=null) // we have just finished a nt sequence
@@ -247,7 +267,6 @@ public class NoisetagController : MonoBehaviour
                 sequenceCompleteEvent.Invoke();
             }
             return;
-            nt.startExpt(10, 10, .1f);
         }
         stimulusState = nt.getStimulusState();
         Debug.Log(stimulusState);

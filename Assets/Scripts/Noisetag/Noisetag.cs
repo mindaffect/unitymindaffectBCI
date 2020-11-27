@@ -573,7 +573,7 @@ namespace nl.ma.utopia
         public int tgtidx;
         public int trli;
         public UtopiaController utopiaController;
-        public Random rng;
+        public Random rng = new Random();
 
         public CalibrationPhase(
             int[] objIDs,
@@ -592,7 +592,6 @@ namespace nl.ma.utopia
             this.isRunning = false;
             this.args = args;
             this.trli = 0;
-            rng = new Random();
         }
 
         public override bool next(float t)
@@ -640,14 +639,18 @@ namespace nl.ma.utopia
         public float selectionThreshold;
         public int[][] stimSeq;
         public GSM stimulusStateStack;
+        public int tgtidx;
         public int tgti;
         public UtopiaController utopiaController;
+        public Random rng= new Random();
+        public bool cuedPrediction;
 
         public PredictionPhase(int[] objIDs,
                    int[][] stimSeq,
                    int nTrials = 10,
                    UtopiaController utopiaController = null,
                    GSM stimulusStateStack = null,
+                   bool cuedPrediction = false,
                    params object[] args)
         {
             this.objIDs = objIDs;
@@ -655,10 +658,12 @@ namespace nl.ma.utopia
             this.nTrials = nTrials;
             this.utopiaController = utopiaController;
             this.stimulusStateStack = stimulusStateStack;
+            this.cuedPrediction = cuedPrediction;
             this.args = args;
 
             this.isRunning = false;
             this.tgti = 0;
+            this.tgtidx = -1;
         }
 
         public override bool next(float t)
@@ -671,11 +676,17 @@ namespace nl.ma.utopia
             }
             if (this.tgti < this.nTrials)
             {
-                Console.WriteLine(String.Format("Start Pred: {0:d}/{1:d}", this.tgti, this.nTrials));
+                if ( this.cuedPrediction ) {
+                    this.tgtidx = rng.Next(this.objIDs.Length);
+                } else
+                {
+                    this.tgtidx = -1;
+                }
+                Console.WriteLine(String.Format("Start Cal: {0:d}/{1:d} tgtidx={2:d}", this.tgti, this.nTrials, this.tgtidx));
                 this.stimulusStateStack.push(
                   new SingleTrial(
                       this.stimSeq,
-                      -1,
+                      this.tgtidx,
                       this.utopiaController,
                       this.stimulusStateStack,
                       this.args)
@@ -706,6 +717,7 @@ namespace nl.ma.utopia
         public int[][] stimSeq;
         public GSM stimulusStateStack;
         public UtopiaController utopiaController;
+        public bool cuedPrediction;
 
         public Experiment(
             int[] objIDs,
@@ -725,6 +737,7 @@ namespace nl.ma.utopia
             this.selectionThreshold = selectionThreshold;
             this.utopiaController = utopiaController;
             this.stimulusStateStack = stimulusStateStack;
+            this.cuedPrediction = false;
 
             // add the selection threshold (off for cal) to the arguments stack
             this.calargs = new object[args.Length + 1];
@@ -771,6 +784,7 @@ namespace nl.ma.utopia
                            this.nPred,
                            this.utopiaController,
                            this.stimulusStateStack,
+                           this.cuedPrediction,
                            this.predargs));
             }
             else
@@ -962,6 +976,7 @@ namespace nl.ma.utopia
         {
                 return this.utopiaController.getLastSignalQuality();
         }
+
         public virtual void addMessageHandler(UtopiaController.MessageDegelateType cb)
         {
                 this.utopiaController.addMessageHandler(cb);
@@ -970,16 +985,20 @@ namespace nl.ma.utopia
         {
                 this.utopiaController.addPredictionHandler(cb);
         }
-
         public virtual void addSelectionHandler(UtopiaController.SelectionDegelateType cb)
         {
                 this.utopiaController.addSelectionHandler(cb);
         }
-
         public virtual void addSignalQualityHandler(UtopiaController.SignalQualityDegelateType cb)
         {
                 this.utopiaController.addSignalQualityHandler(cb);
         }
+        public virtual void addNewTargetHandler(UtopiaController.NewTargetDegelateType cb)
+        {
+            this.utopiaController.addNewTargetHandler(cb);
+        }
+
+
 
         public virtual long getTimeStamp(int t0 = 0)
         {
@@ -1045,7 +1064,8 @@ namespace nl.ma.utopia
         public virtual void startPrediction(
             int nTrials = 10,
             int[][] stimSeq = null,
-        float selectionThreshold = .1f,
+            bool cuedPrediction = false,
+            float selectionThreshold = .1f,
             params object[] args)
         {
             if (this.stimulusStateMachineStack.stack.Count > 0)
@@ -1060,6 +1080,7 @@ namespace nl.ma.utopia
                      nTrials,
                      this.utopiaController,
                      this.stimulusStateMachineStack,
+                     cuedPrediction,
                      selectionThreshold,
                      args));
         }

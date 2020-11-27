@@ -34,6 +34,9 @@ namespace nl.ma.utopia
         public delegate void SignalQualityDegelateType(float[] sigquality);
         SignalQualityDegelateType signalQualityHandlers = null;
 
+        public delegate void NewTargetDegelateType();
+        NewTargetDegelateType newTargetHandlers = null;
+
         public double selectionThreshold;
 
         public UtopiaController()
@@ -61,28 +64,28 @@ namespace nl.ma.utopia
             {
                 this.messageHandlers += cb;
             }
-
-            //this.messageHandlers.Add(cb);
         }
 
 
         public virtual void addPredictionHandler(PredictionDegelateType cb)
         {
             this.predictionHandlers += cb;
-            //this.predictionHandlers.Add(cb);
+        }
+
+        public virtual void addNewTargetHandler(NewTargetDegelateType cb)
+        {
+            this.newTargetHandlers += cb;
         }
 
         public virtual void addSelectionHandler(SelectionDegelateType cb)
         {
             this.selectionHandlers += cb;
-            //this.selectionHandlers.Add(cb);
         }
 
 
         public virtual void addSignalQualityHandler(SignalQualityDegelateType cb)
         {
             this.signalQualityHandlers += cb;
-            //this.selectionHandlers.Add(cb);
         }
 
         // get a (relative) wall-time stamp *in milliseconds*
@@ -114,10 +117,10 @@ namespace nl.ma.utopia
             if (!this.client.isConnected())
             {
                 Console.WriteLine("Warning:: couldnt connect to a utopia hub....");
-                this.client = null;
+                //this.client = null;
             }
             // subscribe to PREDICTEDTARGETPROB, MODECHANGE, SELECTION, ELECTRODEQUALITY and NEWTARGET messages only
-            if (this.client != null)
+            if (this.client != null && this.client.isConnected() )
             {
                 subscribe("PMSNQ");
             }
@@ -228,6 +231,10 @@ namespace nl.ma.utopia
             {
                 this.client.sendMessage(new NewTarget(this.getTimeStamp()));
             }
+            if (newTargetHandlers != null)
+            {
+                this.newTargetHandlers.Invoke();
+            }
         }
 
         public virtual void selection(int objID)
@@ -254,7 +261,7 @@ namespace nl.ma.utopia
                 return null;
             }
             // get any messages with predictions
-            this.msgs = this.client.getNewMessages();//timeout_ms);
+            this.msgs = this.client.getNewMessages();// timeout_ms);
             if (timeout_ms > 0)
             {
                 Console.WriteLine("Warning: timeout not supported yet!!");
@@ -286,10 +293,6 @@ namespace nl.ma.utopia
                     }
                     else if (m.msgID() == Selection.MSGID)
                     {
-                        // process selection callbacks
-                        //foreach (SelectionDegelateType h in this.selectionHandlers) {
-                        //   h.Invoke(((Selection)m).objID);
-                        //}
                         if (selectionHandlers != null)
                         {
                             this.selectionHandlers.Invoke(((Selection)m).objID);
@@ -303,6 +306,14 @@ namespace nl.ma.utopia
                             this.signalQualityHandlers.Invoke(this.lastSignalQuality.signalQuality);
                         }
                     }
+                    else if (m.msgID() == NewTarget.MSGID)
+                    {
+                        if (newTargetHandlers != null)
+                        {
+                            this.newTargetHandlers.Invoke();
+                        }
+                    }
+
                 }
             }
             return this.msgs;

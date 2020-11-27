@@ -19,9 +19,8 @@ public class GameSceneManager : MonoBehaviour
     void Start()
     {
         NoisetagController nt = NoisetagController.Instance;
-        // N.B. add these listeners from the GUI
-        //nt.sequenceCompleteEvent.AddListener(GoMainMenu);
-        //nt.connectedEvent.AddListener(GoMainMenu);
+        nt.sequenceCompleteEvent.AddListener(GoMainMenu);
+        nt.connectedEvent.AddListener(GoMainMenu);
         //nt.startPrediction(1); // test starting prediction early + button selection
 
         menuObject.SetActive(false);
@@ -42,6 +41,21 @@ public class GameSceneManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown("escape"))
+        {
+            print("escape key was pressed");
+            Application.Quit();
+        }
+        if ( Input.anyKeyDown )
+        {
+            print("key press detected");
+            // stop current stimulus and return to main menu
+            if ( NoisetagController.Instance.isRunning)
+            {
+                NoisetagController.Instance.stopFlicker();
+                NoisetagController.Instance.modeChange("idle");
+            }
+        }
     }
 
     void setActiveObject(GameObject go)
@@ -82,13 +96,37 @@ public class GameSceneManager : MonoBehaviour
         setActiveObject(predictionObject);
         // set all the scene child objects active?
         // make sure the flicker objects have active noisetag ids
-        // N.B. this is only needed because we call startCalibration before the objects
+        // N.B. this is only needed because we call startPrediction before the objects
         //      have been made visible and so get an ID themselves.
         //      If you activate the object first then this is *NOT* needed.
-        //nt.acquireObjIDs(activeObject.GetComponentsInChildren<NoisetagBehaviour>());
+        NoisetagController nt = NoisetagController.Instance;
+        nt.acquireObjIDs(activeObject.GetComponentsInChildren<NoisetagBehaviour>());
 
-        NoisetagController.Instance.startPrediction(nPredictionTrials);
+        nt.startPrediction(nPredictionTrials);
     }
+
+    public void GoCuedPrediction()
+    {
+        // N.B. 
+        setActiveObject(predictionObject);
+        // set all the scene child objects active?
+        // make sure the flicker objects have active noisetag ids
+        // N.B. this is only needed because we call startPrediction before the objects
+        //      have been made visible and so get an ID themselves.
+        //      If you activate the object first then this is *NOT* needed.
+        NoisetagController nt = NoisetagController.Instance;
+        nt.acquireObjIDs(activeObject.GetComponentsInChildren<NoisetagBehaviour>());
+
+        nt.startPrediction(nPredictionTrials, true);
+    }
+
+
+    public void ResetCalibrationModel()
+    {
+        NoisetagController.Instance.modeChange("reset");
+        NoisetagController.Instance.modeChange("idle");
+    }
+
 
     public void GoSignalQuality()
     {

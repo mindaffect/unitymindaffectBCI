@@ -25,7 +25,7 @@ namespace nl.ma.utopiaserver {
         private long nextHeartbeatTimeUDP;
         // Socket clientSocket;
 
-        private static int MAXBUFFERSIZE = 4096;
+        private static int MAXBUFFERSIZE = 1024*1024*16; // 16Mb is max message size
 
         ByteBuffer inbuffer;
 
@@ -43,19 +43,20 @@ namespace nl.ma.utopiaserver {
             this.inbuffer = ByteBuffer.allocate(MAXBUFFERSIZE);
             this.nextHeartbeatTime = getTimeStamp();
             this.nextHeartbeatTimeUDP = getTimeStamp();
-	    this.ssdpDiscovery = null; 
+	        this.ssdpDiscovery = null;
+            this.clientSocket = new TcpClient();
         }
 
 	// TODO: make timeout work correctly
         public bool connect(string host, int port=-1, int timeout_ms=5000)
         {
 	    if ( port<0 ) port=Constants.DEFAULTPORT;
-            if (this.clientSocket != null)
+            if (this.clientSocket != null && this.clientSocket.Connected)
 		{
 		    this.clientSocket.Close();
 		    this.clientSocket = null;
 		}
-            if (host == null || host.Length == 0)
+            if (host == null || host.Length == 0 || host == "-" )
 		{
 		    // auto-search for host port
 		    Console.WriteLine("Trying SSDP discovery");
@@ -91,14 +92,24 @@ namespace nl.ma.utopiaserver {
 		}
 
             if (host == null || host.Length == 0) return false;
-            this.clientSocket = new TcpClient(host, port);
-            this.networkStream = this.clientSocket.GetStream();
-            this.clientSocket.ReceiveTimeout = 500;
-            this.clientSocket.NoDelay = true; // disable Nagle?
+            if ( this.clientSocket == null ) this.clientSocket = new TcpClient();
+            try
+            {
+                this.clientSocket.Connect(host, port);
+            } catch ( SocketException ex)
+            {
 
-            // udp client bound to same local port number to make matching udp/tcp messages easier
-            this.udpClient = new UdpClient(((System.Net.IPEndPoint)this.clientSocket.Client.LocalEndPoint).Port);
-            this.udpClient.Connect(host, port);
+            }
+            if (this.clientSocket.Connected)
+            {
+                this.networkStream = this.clientSocket.GetStream();
+                this.clientSocket.ReceiveTimeout = 500;
+                this.clientSocket.NoDelay = true; // disable Nagle?
+
+                // udp client bound to same local port number to make matching udp/tcp messages easier
+                this.udpClient = new UdpClient(((System.Net.IPEndPoint)this.clientSocket.Client.LocalEndPoint).Port);
+                this.udpClient.Connect(host, port);
+            }
             return this.clientSocket.Connected;
         
         }
@@ -190,25 +201,35 @@ namespace nl.ma.utopiaserver {
 	    //  copy from the stream to the byte-buffer
 	    //  TODO: [] check for stream close!
 	    while( networkStream.DataAvailable && inbuffer.capacity()>inbuffer.position()) {
-		inbuffer.put((byte)networkStream.ReadByte());
+		    inbuffer.put((byte)networkStream.ReadByte());
 	    }
 	    inbuffer.flip();
 	    if ( VERBOSITY >= 1) {
-		Console.WriteLine(inbuffer.remaining() + " to read in channel");
+		    Console.WriteLine(inbuffer.remaining() + " to read in channel");
 	    }
 
 	    while ((inbuffer.remaining() > 0)) {
-		try {
-		    RawMessage rawmessage = RawMessage.deserialize(inbuffer);
-		    UtopiaMessage msg = rawmessage.decodePayload();
-		    inmessageQueue.Add(msg);
-		}
-		catch (ClientException ex) {
-		    Console.WriteLine("Something wrong with client message... skipped");
-		    Console.WriteLine(ex.getMessage());
-		}
+            RawMessage rawmessage = null;
+		    try {
+		        rawmessage = RawMessage.deserialize(inbuffer);
+		    }
+		    catch (ClientException ex) {
+		        Console.WriteLine("Something wrong deserializing client message... skipped");
+		        Console.WriteLine(ex.getMessage());
+                break;
+		    }
+            try
+            {
+                UtopiaMessage msg = rawmessage.decodePayload();
+                inmessageQueue.Add(msg);
 
-	    }
+            }
+                catch ( ClientException ex)
+                {
+                    Console.WriteLine("Something wrong decoding client message... skipped");
+                    Console.WriteLine(ex.getMessage());
+                }
+            }
 
 	    if ((VERBOSITY >= 1)) {
 		Console.WriteLine(("New message queue size: " + inmessageQueue.Count));
@@ -233,9 +254,15 @@ namespace nl.ma.utopiaserver {
         }
 
         public void sendMessageUDP(UtopiaMessage msg) {
+            if (udpClient == null) // fall back on TCP
+            {
+                sendMessage(msg);
+                return;
+            }
             //  add time-stamp information if not already there.
-            if ((msg.getTimeStamp() < 0)) {
-		msg.setTimeStamp(getTimeStamp());
+            if ((msg.getTimeStamp() < 0))
+            {
+                msg.setTimeStamp(getTimeStamp());
             }
 
             serializeMessage(msg);
