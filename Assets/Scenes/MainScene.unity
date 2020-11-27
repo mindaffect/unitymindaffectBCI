@@ -350,7 +350,6 @@ GameObject:
   - component: {fileID: 77475099}
   - component: {fileID: 77475098}
   - component: {fileID: 77475097}
-  - component: {fileID: 77475101}
   - component: {fileID: 77475102}
   m_Layer: 0
   m_Name: Keyboard
@@ -469,34 +468,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &77475101
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 77475096}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cafa2e8aa83281e4ab36e78e6751df57, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  myobjID: -1
-  mystate: -1
-  myprob: -1
-  isVisible: 0
-  flicker_color: {r: 0, g: 0, b: 0, a: 0}
-  live_predictions: 1
-  selectedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  selectedObjectEvent:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEventGameObject, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-      PublicKeyToken=null
 --- !u!114 &77475102
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -506,11 +477,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 77475096}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7675bf0ac0ed7534fac03c1f311d0099, type: 3}
+  m_Script: {fileID: 11500000, guid: 9a8ba2761a1745146a1544b4f61ab8b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spellerText: {fileID: 893651055}
-  DEFAULTTEXT: 'Your text: '
+  spellerText: {fileID: 0}
+  DEFAULTTEXT: Your text here
 --- !u!1 &130257320
 GameObject:
   m_ObjectHideFlags: 0
@@ -937,7 +908,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &171474126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1722,7 +1693,7 @@ MonoBehaviour:
   nframe: 0
   ISI: 60
   lastframetime: 0
-  codebook: {fileID: 4900000, guid: 55e01dea41961b746a9f56c83034b041, type: 3}
+  codebook: {fileID: 4900000, guid: 0b3fec475bd5e5343b9be09135ff98fe, type: 3}
   FRAMESPERCODEBIT: 1
 --- !u!4 &333924877
 Transform:
@@ -2900,7 +2871,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &533628444
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9316,7 +9287,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1639225396
 Transform:
   m_ObjectHideFlags: 0
@@ -11866,8 +11837,8 @@ MonoBehaviour:
   selectedObjectEvent:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 77475102}
-        m_MethodName: addCharacter
+      - m_Target: {fileID: 77475096}
+        m_MethodName: 
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
