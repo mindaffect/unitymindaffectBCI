@@ -66,7 +66,21 @@ public class SSDPDiscovery
 	IPEndPoint recieveEndPoint = new IPEndPoint(IPAddress.Any, 0);
 	Console.WriteLine("Awaiting responses:");
 	udpClient.Client.ReceiveTimeout=timeout;
-	var data = udpClient.Receive(ref recieveEndPoint);
+        byte[] data=null;
+        try
+        {
+            data = udpClient.Receive(ref recieveEndPoint);
+        } catch ( SocketException ex)
+        {
+            if ( ex.ErrorCode == 10035 || ex.ErrorCode == 10060 )// WSAEWOULDBLOCK or WSATIMEOUT
+            {
+                // exception OK
+            } else
+            {
+                throw ex;
+            }
+        }
+        if (data == null) return devices;
 	// Got a response, so decode it
 	string result = Encoding.UTF8.GetString(data);
 	Console.WriteLine("Got response: " + result.ToString());

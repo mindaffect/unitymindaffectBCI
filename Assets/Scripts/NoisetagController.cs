@@ -14,19 +14,21 @@ using UnityEngine.Events;
  * and deregister themselvees as under bci control, and some callback degelates for important events in managing the noise tags, such as when a sequence finishes.   Finrally, (and most importantly) it tracks the *actual* frame render times with high precision so we get a good time-lock for the brain response -- which is important for the BCI performance.
  */
 
+/* typed events */
+[System.Serializable] public class NewMessagesEventType : UnityEvent<List<UtopiaMessage>> { };
+[System.Serializable] public class NewPredictionEventType : UnityEvent<PredictedTargetProb> { };
+[System.Serializable] public class SelectionEventType : UnityEvent<int> { };
+[System.Serializable] public class SignalQualityEventType : UnityEvent<float[]> { };
+
 public class NoisetagController : MonoBehaviour
 {
     // make an event systemfor relevant noise tag events..
-    public UnityEvent sequenceCompleteEvent;
     public UnityEvent connectedEvent;
-    public class NewMessagesEventType : UnityEvent<List<UtopiaMessage>> { };
-    public NewMessagesEventType newMessagesEvent;
-    public class NewPredictionEventType : UnityEvent<PredictedTargetProb> { };
-    public NewPredictionEventType newPredictionEvent;
-    public class SelectionEventType : UnityEvent<int> { };
-    public SelectionEventType selectionEvent;
+    public UnityEvent sequenceCompleteEvent;
     public UnityEvent newTargetEvent;
-    public class SignalQualityEventType : UnityEvent<float[]> { };
+    public NewMessagesEventType newMessagesEvent;
+    public NewPredictionEventType newPredictionEvent;
+    public SelectionEventType selectionEvent;
     public SignalQualityEventType signalQualityEvent;
 
     public string decoderAddress = null;
