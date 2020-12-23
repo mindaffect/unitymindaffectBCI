@@ -38,6 +38,7 @@ public class NoisetagController : MonoBehaviour
     public int nframe;
     public int ISI = 60;
     public long lastframetime;
+    public bool target_only = false;
     // singlenton pattern....
     public static NoisetagController instance = null;
     public TextAsset codebook = null;
@@ -72,7 +73,7 @@ public class NoisetagController : MonoBehaviour
 
         // Switch to 640 x 480 full-screen at 60 hz, and put
         // VSYNC on, so we a) run fast, b) are time-accurate.
-        Screen.SetResolution(1280, 720, FullScreenMode.ExclusiveFullScreen, 60);
+        Screen.SetResolution(Screen.width, Screen.height, FullScreenMode.ExclusiveFullScreen);
         // FORCE!! Sync framerate to monitors refresh rate
         QualitySettings.vSyncCount = 1;
 
@@ -186,8 +187,15 @@ public class NoisetagController : MonoBehaviour
 
     public void startCalibration(int nTrials = 10)
     {
+        target_only = false;
         nt.startCalibration(nTrials);
     }
+    public void startSimpleCalibration(int nTrials = 10)
+    {
+        target_only = true;
+        nt.startCalibration(nTrials);
+    }
+
     public void startPrediction()
     {
         startPrediction(10);
@@ -198,10 +206,12 @@ public class NoisetagController : MonoBehaviour
     }
     public void startCuedPrediction(int nTrials=10)
     {
+        target_only = false;
         nt.startPrediction(nTrials, null, true);
     }
     public void startPrediction(int nTrials, bool cuedPrediction)
     {
+        target_only = false;
         nt.startPrediction(nTrials,null,cuedPrediction);
     }
     public void startFlickerWithSelection(float duration=10)
@@ -299,13 +309,13 @@ public class NoisetagController : MonoBehaviour
         }
         stimulusState = nt.getStimulusState();
         Debug.Log(stimulusState);
-        if (stimulusState != null && stimulusState.targetState >= 0)
+        if (stimulusState != null && stimulusState.target_idx >= 0 && stimulusState.target_idx < stimulusState.stimulusState.Length)
         {
-            logstr += stimulusState.targetState > 0 ? "*" : ".";
+            logstr += stimulusState.stimulusState[stimulusState.target_idx] > 0 ? "*" : ".";
         }
         else
         {
-            logstr += String.Format("{0:d} ", nframe);
+            logstr += "_";
         }
         if (logstr.Length > 60)
         {
@@ -411,13 +421,19 @@ public class NoisetagController : MonoBehaviour
         {
             if (myobjID == 0)
             {
+                int targetState = stimulusState.target_idx <= 0 ? -1 : stimulusState.stimulusState[stimulusState.target_idx];
                 // target is special -- only is on/off
-                return stimulusState.targetState == 1 ? 1 : 0;
+                return targetState == 1 ? 1 : 0;
             }
             else
             {
                 int objIdx = getObjIdx(stimulusState.objIDs, myobjID);
-                if (objIdx >= 0)
+                if ( target_only && objIdx != stimulusState.target_idx)
+                {
+                    // in target only mode, only the stim with idx matching the target gets a state
+                    return 0;
+                }
+                if (objIdx >= 0 )
                 {
                     return stimulusState.stimulusState[objIdx];
                 }
