@@ -138,8 +138,8 @@ public class NoisetagBehaviour : MonoBehaviour
         if (mystate < 0) return;
 
 
-        updateRendererColor();
         updateButtonColor();
+        updateRendererColor();
     }
 
     public Color getFlickerColor(int mystate=0, float myprob=-1)
@@ -178,13 +178,6 @@ public class NoisetagBehaviour : MonoBehaviour
         {
             // change the color of all material below this gameobject
             foreach (Material m in r.materials)
-            {
-                m.color = this.flicker_color;
-            }
-        }
-        else
-        {
-            foreach (Material m in gameObject.GetComponents<Material>())
             {
                 m.color = this.flicker_color;
             }

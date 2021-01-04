@@ -154,10 +154,10 @@ namespace nl.ma.utopia
                 this.client.sendMessage(stimEvent);
             }
             // erp injection for debugging with fakedata
-            int target_state = target_idx >=0 && target_idx<stimulusState[target_idx] ? stimulusState[target_idx] : -1;
+            int target_state = target_idx >=0 && target_idx<stimulusState.Length ? stimulusState[target_idx] : -1;
             if (target_state == 0 || target_state == 1)
             {
-                injectERP(target_state);
+                injectERP(target_state, this.client.getHost());
             }
             return stimEvent;
         }

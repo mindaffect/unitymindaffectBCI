@@ -680,7 +680,7 @@ namespace nl.ma.utopia
                 {
                     this.tgtidx = -1;
                 }
-                Console.WriteLine(String.Format("Start Cal: {0:d}/{1:d} tgtidx={2:d}", this.tgti, this.nTrials, this.tgtidx));
+                Console.WriteLine(String.Format("Start Pred: {0:d}/{1:d} tgtidx={2:d}", this.tgti, this.nTrials, this.tgtidx));
                 this.stimulusStateStack.push(
                   new SingleTrial(
                       this.stimSeq,
@@ -1064,6 +1064,7 @@ namespace nl.ma.utopia
             int[][] stimSeq = null,
             bool cuedPrediction = false,
             float selectionThreshold = .1f,
+            int numframes=60*10,
             params object[] args)
         {
             if (this.stimulusStateMachineStack.stack.Count > 0)
@@ -1080,6 +1081,7 @@ namespace nl.ma.utopia
                      this.stimulusStateMachineStack,
                      cuedPrediction,
                      selectionThreshold,
+                     numframes,
                      args));
         }
 

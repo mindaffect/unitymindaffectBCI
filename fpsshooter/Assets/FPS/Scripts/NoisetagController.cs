@@ -36,7 +36,7 @@ public class NoisetagController : MonoBehaviour
     private bool wasRunning = false;
     public Noisetag nt;
     public int nframe;
-    public int ISI = 60;
+    static public int ISI = 60;
     public long lastframetime;
     public bool target_only = false;
     // singlenton pattern....
@@ -48,6 +48,11 @@ public class NoisetagController : MonoBehaviour
     private int[] objIDs = null;
     // number of video frames per noisetag codebit
     public int FRAMESPERCODEBIT = 1;
+
+    public float selectionThreshold = .1f;
+    public int prediction_frames = ISI*10;
+    public int calibration_frames= (int)(ISI*4.2);
+
 
     // singlenton field
     private static NoisetagController _instance;
@@ -120,7 +125,7 @@ public class NoisetagController : MonoBehaviour
         {
             if (!nt.isConnected())
             {
-                tryToConnect(1);
+                tryToConnect(10);
             }
             // check again in .5s
             yield return new WaitForSeconds(.5f);
@@ -174,11 +179,11 @@ public class NoisetagController : MonoBehaviour
 
     public void startExpt(int nCal = 10)
     {
-        startExpt(nCal, 10, .1f);
+        startExpt(nCal, 10, selectionThreshold);
     }
     public void startExpt(int nCal, int nPred)
     {
-        startExpt(nCal, nPred, .1f);
+        startExpt(nCal, nPred, selectionThreshold);
     }
     public void startExpt(int nCal, int nPred, float selectionThreshold)
     {
@@ -188,7 +193,7 @@ public class NoisetagController : MonoBehaviour
     public void startCalibration(int nTrials = 10)
     {
         target_only = false;
-        nt.startCalibration(nTrials);
+        nt.startCalibration(nTrials, null, calibration_frames);
     }
     public void startSimpleCalibration(int nTrials = 10)
     {
@@ -207,16 +212,16 @@ public class NoisetagController : MonoBehaviour
     public void startCuedPrediction(int nTrials=10)
     {
         target_only = false;
-        nt.startPrediction(nTrials, null, true);
+        nt.startPrediction(nTrials, null, true, selectionThreshold, prediction_frames);
     }
     public void startPrediction(int nTrials, bool cuedPrediction)
     {
         target_only = false;
-        nt.startPrediction(nTrials,null,cuedPrediction);
+        nt.startPrediction(nTrials,null,cuedPrediction, selectionThreshold, prediction_frames);
     }
     public void startFlickerWithSelection(float duration=10)
     {
-        startFlickerWithSelection(duration,.1f);
+        startFlickerWithSelection(duration,selectionThreshold);
     }
     public void startFlickerWithSelection(float duration, float selectionThreshold, int tgtidx = -1)
     {
@@ -284,12 +289,13 @@ public class NoisetagController : MonoBehaviour
 
     // Update is called once per frame
     string logstr = "";
+
     void Update()
     {
         // don't bother if not connected to decoder...
         if (!this.nt.isConnected())
         {
-            Debug.Log("Noise-tag is not connected!");
+            //Debug.Log("Noise-tag is not connected!");
             return;
         }
 

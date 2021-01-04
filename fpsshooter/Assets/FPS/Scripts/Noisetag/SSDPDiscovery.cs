@@ -46,7 +46,8 @@ public class SSDPDiscovery
 	udpClient.JoinMulticastGroup(address);
 	return udpClient;
     }
-    
+
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.Synchronized)]
     public List<Dictionary<string,string>> discover(int timeout=1000)
     {
 	var devices = new List<Dictionary<string,string>>();
