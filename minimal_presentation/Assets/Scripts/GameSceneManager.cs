@@ -90,6 +90,21 @@ public class GameSceneManager : MonoBehaviour
         nt.startCalibration(nCalibrationTrials);
     }
 
+    public void GoSimpleCalibration()
+    {
+        setActiveObject(calibrationObject);
+        // make sure the flicker objects have active noisetag ids
+        // N.B. this is only needed because we call startCalibration before the objects
+        //      have been made visible and so get an ID themselves.
+        //      If you activate the object first then this is *NOT* needed.
+        NoisetagController nt = NoisetagController.Instance;
+        nt.acquireObjIDs(activeObject.GetComponentsInChildren<NoisetagBehaviour>());
+        // N.B. make sure the calibration objects are active before calling this
+        //      otherwise can't do the cueing as don't know how many outputs there are.
+        nt.startSimpleCalibration(nCalibrationTrials);
+    }
+
+
     public void GoPrediction()
     {
         // N.B. 

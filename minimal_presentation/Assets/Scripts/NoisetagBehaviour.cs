@@ -16,14 +16,15 @@ public class NoisetagBehaviour : MonoBehaviour
     public bool isVisible = false;
     public Color flicker_color;
     public bool live_predictions = true;
+    public GameObject camObject = null;
+    public float max_distance = 60;
+
 
     public UnityEvent selectedEvent;
     public UnityEventGameObject selectedObjectEvent;
     // Start is called before the first frame update
     void Start()
     {
-        // TODO[] search for the color children of this object to be NT changed when started
-        // to save findobjbytype stuff...
     }
 
     public void OnEnable()
@@ -93,11 +94,41 @@ public class NoisetagBehaviour : MonoBehaviour
         this.myprob = -1;
     }
 
+    public bool isVisibleTo(GameObject go)
+    {
+        if ( go==null)
+        {
+            return true;
+        }
 
+        Vector3 heading = this.transform.position - go.transform.position;
+        if ( this.max_distance > 0 && heading.magnitude > this.max_distance )
+        {
+            return false;
+        }
+
+        RaycastHit hit;
+        if ( Physics.Linecast(go.transform.position, this.transform.position, out hit))
+        {
+            if (hit.transform != this.transform)
+            {
+                //Debug.DrawLine(go.transform.position, this.transform.position, Color.red);
+                //Debug.Log(this.name + " Tested" + go.name + " occluded by " + hit.transform.name);
+                return false;
+            } else
+            {
+                //Debug.DrawLine(go.transform.position, this.transform.position, Color.red);
+                Debug.Log(this.name + " Tested" + go.name + " visible to " + hit.transform.name);
+                return true;
+            }
+        }
+        return true;
+    }
+    
     // Update is called once per frame
     public void Update()
     {
-        if( myobjID<0 && isVisible)
+        if( myobjID<0 && isVisible && isVisibleTo(this.camObject) )
         {
             acquireNoisetagObjID();
         }
@@ -107,8 +138,8 @@ public class NoisetagBehaviour : MonoBehaviour
         if (mystate < 0) return;
 
 
-        updateRendererColor();
         updateButtonColor();
+        updateRendererColor();
     }
 
     public Color getFlickerColor(int mystate=0, float myprob=-1)
@@ -143,12 +174,13 @@ public class NoisetagBehaviour : MonoBehaviour
     public void updateRendererColor()
     {
         Renderer r = gameObject.GetComponent<MeshRenderer>();
-        if (r == null) return;
-
-        // change the color of all material below this gameobject
-        foreach (Material m in r.materials)
+        if (r != null)
         {
-            m.color = this.flicker_color;
+            // change the color of all material below this gameobject
+            foreach (Material m in r.materials)
+            {
+                m.color = this.flicker_color;
+            }
         }
     }
 

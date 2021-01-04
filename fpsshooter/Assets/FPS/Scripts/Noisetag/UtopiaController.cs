@@ -154,7 +154,7 @@ namespace nl.ma.utopia
                 this.client.sendMessage(stimEvent);
             }
             // erp injection for debugging with fakedata
-            int target_state = target_idx <= 0 ? -1 : stimulusState[target_idx];
+            int target_state = target_idx >=0 && target_idx<stimulusState[target_idx] ? stimulusState[target_idx] : -1;
             if (target_state == 0 || target_state == 1)
             {
                 injectERP(target_state);

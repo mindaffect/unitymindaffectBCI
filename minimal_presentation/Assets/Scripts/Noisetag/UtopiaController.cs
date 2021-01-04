@@ -141,22 +141,23 @@ namespace nl.ma.utopia
         // Send a message to the Utopia-HUB informing of the current stimulus state
         public virtual StimulusEvent sendStimulusEvent(int[] stimulusState,
                           long timestamp = -1,
-                          int targetState = -1,
+                          int target_idx = -1,
                           int[] objIDs = null)
         {
             StimulusEvent stimEvent =
                 this.mkStimulusEvent(stimulusState,
                          timestamp,
-                         targetState,
+                         target_idx,
                          objIDs);
-            if (this.client != null)
+            if (stimulusState.Length>0 && this.client != null)
             {
                 this.client.sendMessage(stimEvent);
             }
             // erp injection for debugging with fakedata
-            if (targetState == 0 || targetState == 1)
+            int target_state = target_idx >=0 && target_idx<stimulusState.Length ? stimulusState[target_idx] : -1;
+            if (target_state == 0 || target_state == 1)
             {
-                injectERP(targetState);
+                injectERP(target_state, this.client.getHost());
             }
             return stimEvent;
         }
@@ -165,7 +166,7 @@ namespace nl.ma.utopia
         // make a valid stimulus event for the given stimulus state
         public virtual StimulusEvent mkStimulusEvent(int[] stimulusState,
                              long timestamp = -1,
-                             int targetState = -1,
+                             int target_idx = -1,
                              int[] objIDs = null)
         {
             if (timestamp == -1)
@@ -184,15 +185,15 @@ namespace nl.ma.utopia
             {
                 throw new System.ArgumentOutOfRangeException("ARGH! objIDs and stimulusState not same length!");
             }
-            // insert extra 0 object ID if targetState given
-            if (targetState >= 0)
+            // insert extra 0 object ID if target_idx given
+            if (target_idx >= 0)
             {
                 int[] tgtobjIDs = new int[objIDs.Length + 1];
                 objIDs.CopyTo(tgtobjIDs, 0);
                 tgtobjIDs[tgtobjIDs.Length - 1] = 0;
                 int[] tgtstimState = new int[stimulusState.Length + 1];
                 stimulusState.CopyTo(tgtstimState, 0);
-                tgtstimState[tgtstimState.Length - 1] = targetState;
+                tgtstimState[tgtstimState.Length - 1] = stimulusState[target_idx];
                 objIDs = tgtobjIDs;
                 stimulusState = tgtstimState;
             }

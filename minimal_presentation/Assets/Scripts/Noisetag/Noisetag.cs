@@ -11,7 +11,7 @@ namespace nl.ma.utopia
     {
         public int[] stimulusState;
         public int[] objIDs;
-        public int targetState;
+        public int target_idx;
         public bool sendEvents;
         public StimulusState(int nobj)
         {
@@ -19,16 +19,16 @@ namespace nl.ma.utopia
             int[] ss = new int[nobj];
             set(ss, oi, -1, false);
         }
-        public StimulusState(int[] ss, int[] oi, int ts, bool se)
+        public StimulusState(int[] ss, int[] oi, int ti, bool se)
         {
-            this.set(ss, oi, ts, se);
+            this.set(ss, oi, ti, se);
         }
-        public StimulusState set(int[] ss, int[] oi, int ts, bool se)
+        public StimulusState set(int[] ss, int[] oi, int ti, bool se)
         {
             // Q: deep copy?
             this.stimulusState = ss;
             this.objIDs = oi;
-            this.targetState = ts;
+            this.target_idx = ti;
             this.sendEvents = se;
             if (this.stimulusState == null && oi != null)
             { // make stim-state array if not given
@@ -52,7 +52,8 @@ namespace nl.ma.utopia
                     else str += "null ";
                 }
             }
-            str += " tgt:" + targetState + " se:" + sendEvents + "}";
+            int tgt_state = (target_idx >= 0 && target_idx < stimulusState.Length) ? stimulusState[target_idx] : -1;
+            str += " tgt:" + tgt_state + " se:" + sendEvents + "}";
             return str;
         }
     }
@@ -215,10 +216,7 @@ namespace nl.ma.utopia
             // set the stimulus state
             int[] curss = this.stimSeq[ssidx];
             for (int i = 0; i < this.ss.stimulusState.Length; i++) this.ss.stimulusState[i] = curss[i];
-            if (this.tgtidx >= 0)
-            {
-                this.ss.targetState = curss[this.tgtidx];
-            }
+            this.ss.target_idx = this.tgtidx;
             this.ss.sendEvents = this.sendEvents;
         }
 
@@ -360,7 +358,7 @@ namespace nl.ma.utopia
             //Console.WriteLine("SingleTrial: args "+args.Length); foreach ( object arg in args ) Console.WriteLine(arg);
             // parse / default the variable length args portion
             float selectionThreshold = -1;
-            int numframes = 400;
+            int numframes = -1;
             int duration = 4;
             int cueduration = 1;
             int feedbackduration = 1;
@@ -682,7 +680,7 @@ namespace nl.ma.utopia
                 {
                     this.tgtidx = -1;
                 }
-                Console.WriteLine(String.Format("Start Cal: {0:d}/{1:d} tgtidx={2:d}", this.tgti, this.nTrials, this.tgtidx));
+                Console.WriteLine(String.Format("Start Pred: {0:d}/{1:d} tgtidx={2:d}", this.tgti, this.nTrials, this.tgtidx));
                 this.stimulusStateStack.push(
                   new SingleTrial(
                       this.stimSeq,
@@ -928,7 +926,7 @@ namespace nl.ma.utopia
                 this.laststate.stimulusState[oi] = this.lastrawstate.stimulusState[stimidx];
             }
             this.laststate.objIDs = this.objIDs;
-            this.laststate.targetState = this.lastrawstate.targetState;
+            this.laststate.target_idx = this.lastrawstate.target_idx;
             this.laststate.sendEvents = this.lastrawstate.sendEvents;
             return this.laststate;
         }
@@ -957,14 +955,14 @@ namespace nl.ma.utopia
         {
             // get from last-state
             int[] stimState = this.laststate.stimulusState;
-            int tgtState = this.laststate.targetState;
+            int tgt_idx = this.laststate.target_idx;
             int[] objIDs = this.laststate.objIDs;
             bool sendEvent = this.laststate.sendEvents;
             // send info about the stimulus displayed
             if (sendEvent && stimState != null)
             {
-                //print((stimState,targetState))
-                this.utopiaController.sendStimulusEvent(stimState, timestamp, tgtState, objIDs);
+                //print((stimState,target_idx))
+                this.utopiaController.sendStimulusEvent(stimState, timestamp, tgt_idx, objIDs);
             }
         }
 
@@ -1066,6 +1064,7 @@ namespace nl.ma.utopia
             int[][] stimSeq = null,
             bool cuedPrediction = false,
             float selectionThreshold = .1f,
+            int numframes=60*10,
             params object[] args)
         {
             if (this.stimulusStateMachineStack.stack.Count > 0)
@@ -1082,6 +1081,7 @@ namespace nl.ma.utopia
                      this.stimulusStateMachineStack,
                      cuedPrediction,
                      selectionThreshold,
+                     numframes,
                      args));
         }
 
@@ -1172,9 +1172,9 @@ namespace nl.ma.utopia
                 isRunning = nt.updateStimulusState(nframe);
                 if (!isRunning) break;
                 StimulusState ss = nt.getStimulusState();
-                if (ss.targetState >= 0)
+                if (ss.target_idx >= 0)
                 {
-                    Console.Write(ss.targetState > 0 ? "*" : ".");
+                    Console.Write(ss.stimulusState[ss.target_idx] > 0 ? "*" : ".");
                 }
                 else
                 {

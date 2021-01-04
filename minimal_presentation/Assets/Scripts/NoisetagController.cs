@@ -36,8 +36,9 @@ public class NoisetagController : MonoBehaviour
     private bool wasRunning = false;
     public Noisetag nt;
     public int nframe;
-    public int ISI = 60;
+    static public int ISI = 60;
     public long lastframetime;
+    public bool target_only = false;
     // singlenton pattern....
     public static NoisetagController instance = null;
     public TextAsset codebook = null;
@@ -47,6 +48,11 @@ public class NoisetagController : MonoBehaviour
     private int[] objIDs = null;
     // number of video frames per noisetag codebit
     public int FRAMESPERCODEBIT = 1;
+
+    public float selectionThreshold = .1f;
+    public int prediction_frames = ISI*10;
+    public int calibration_frames= (int)(ISI*4.2);
+
 
     // singlenton field
     private static NoisetagController _instance;
@@ -72,7 +78,7 @@ public class NoisetagController : MonoBehaviour
 
         // Switch to 640 x 480 full-screen at 60 hz, and put
         // VSYNC on, so we a) run fast, b) are time-accurate.
-        Screen.SetResolution(1280, 720, FullScreenMode.ExclusiveFullScreen, 60);
+        Screen.SetResolution(Screen.width, Screen.height, FullScreenMode.ExclusiveFullScreen);
         // FORCE!! Sync framerate to monitors refresh rate
         QualitySettings.vSyncCount = 1;
 
@@ -80,6 +86,7 @@ public class NoisetagController : MonoBehaviour
 
         // setup the event handlers when the connection is up.
         // debug message handler : prints all new messages
+        nt.stopFlicker(); // reset state
         nt.addMessageHandler(newMessageHandler);
         nt.addSelectionHandler(selectionHandler);
         nt.addPredictionHandler(newPredictionHandler);
@@ -118,7 +125,7 @@ public class NoisetagController : MonoBehaviour
         {
             if (!nt.isConnected())
             {
-                tryToConnect(1);
+                tryToConnect(10);
             }
             // check again in .5s
             yield return new WaitForSeconds(.5f);
@@ -134,7 +141,8 @@ public class NoisetagController : MonoBehaviour
         nt.connect(decoderAddress, -1, timeout_ms);
         if (nt.isConnected())
         {
-            Debug.Log("Connected to " + nt.getHostPort());
+            this.decoderAddress = nt.getHostPort();
+            Debug.Log("Connected to " + this.decoderAddress);
             nt.modeChange("idle");
             if ( connectedEvent != null ) connectedEvent.Invoke();
         }
@@ -169,19 +177,53 @@ public class NoisetagController : MonoBehaviour
         return nt.getLastSignalQuality();
     }
 
-    public void startExpt(int nCal = 10, int nPred = 10, float selectionThreshold = .1f)
+    public void startExpt(int nCal = 10)
+    {
+        startExpt(nCal, 10, selectionThreshold);
+    }
+    public void startExpt(int nCal, int nPred)
+    {
+        startExpt(nCal, nPred, selectionThreshold);
+    }
+    public void startExpt(int nCal, int nPred, float selectionThreshold)
     {
         nt.startExpt(nCal, nPred, selectionThreshold);
     }
+
     public void startCalibration(int nTrials = 10)
     {
+        target_only = false;
+        nt.startCalibration(nTrials, null, calibration_frames);
+    }
+    public void startSimpleCalibration(int nTrials = 10)
+    {
+        target_only = true;
         nt.startCalibration(nTrials);
     }
-    public void startPrediction(int nTrials = 10, bool cuedPrediction=false)
+
+    public void startPrediction()
     {
-        nt.startPrediction(nTrials,null,cuedPrediction);
+        startPrediction(10);
     }
-    public void startFlickerWithSelection(float selectionThreshold, float duration = 10, int tgtidx = -1)
+    public void startPrediction(int nTrials)
+    {
+        startPrediction(nTrials, false);
+    }
+    public void startCuedPrediction(int nTrials=10)
+    {
+        target_only = false;
+        nt.startPrediction(nTrials, null, true, selectionThreshold, prediction_frames);
+    }
+    public void startPrediction(int nTrials, bool cuedPrediction)
+    {
+        target_only = false;
+        nt.startPrediction(nTrials,null,cuedPrediction, selectionThreshold, prediction_frames);
+    }
+    public void startFlickerWithSelection(float duration=10)
+    {
+        startFlickerWithSelection(duration,selectionThreshold);
+    }
+    public void startFlickerWithSelection(float duration, float selectionThreshold, int tgtidx = -1)
     {
         nt.startFlickerWithSelection((int)(duration / ISI), tgtidx, true, selectionThreshold);
     }
@@ -247,12 +289,13 @@ public class NoisetagController : MonoBehaviour
 
     // Update is called once per frame
     string logstr = "";
+
     void Update()
     {
         // don't bother if not connected to decoder...
         if (!this.nt.isConnected())
         {
-            Debug.Log("Noise-tag is not connected!");
+            //Debug.Log("Noise-tag is not connected!");
             return;
         }
 
@@ -272,13 +315,13 @@ public class NoisetagController : MonoBehaviour
         }
         stimulusState = nt.getStimulusState();
         Debug.Log(stimulusState);
-        if (stimulusState != null && stimulusState.targetState >= 0)
+        if (stimulusState != null && stimulusState.target_idx >= 0 && stimulusState.target_idx < stimulusState.stimulusState.Length)
         {
-            logstr += stimulusState.targetState > 0 ? "*" : ".";
+            logstr += stimulusState.stimulusState[stimulusState.target_idx] > 0 ? "*" : ".";
         }
         else
         {
-            logstr += String.Format("{0:d} ", nframe);
+            logstr += "_";
         }
         if (logstr.Length > 60)
         {
@@ -384,13 +427,19 @@ public class NoisetagController : MonoBehaviour
         {
             if (myobjID == 0)
             {
+                int targetState = stimulusState.target_idx >= 0 && stimulusState.target_idx < stimulusState.stimulusState.Length ? stimulusState.stimulusState[stimulusState.target_idx] : -1;
                 // target is special -- only is on/off
-                return stimulusState.targetState == 1 ? 1 : 0;
+                return targetState == 1 ? 1 : 0;
             }
             else
             {
                 int objIdx = getObjIdx(stimulusState.objIDs, myobjID);
-                if (objIdx >= 0)
+                if ( target_only && objIdx != stimulusState.target_idx)
+                {
+                    // in target only mode, only the stim with idx matching the target gets a state
+                    return 0;
+                }
+                if (objIdx >= 0 )
                 {
                     return stimulusState.stimulusState[objIdx];
                 }

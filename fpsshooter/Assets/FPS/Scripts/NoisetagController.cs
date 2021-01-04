@@ -421,7 +421,7 @@ public class NoisetagController : MonoBehaviour
         {
             if (myobjID == 0)
             {
-                int targetState = stimulusState.target_idx <= 0 ? -1 : stimulusState.stimulusState[stimulusState.target_idx];
+                int targetState = stimulusState.target_idx >= 0 && stimulusState.target_idx < stimulusState.stimulusState.Length ? stimulusState.stimulusState[stimulusState.target_idx] : -1;
                 // target is special -- only is on/off
                 return targetState == 1 ? 1 : 0;
             }

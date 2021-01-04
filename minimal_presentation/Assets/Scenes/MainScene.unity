@@ -170,6 +170,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -480,7 +482,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a8ba2761a1745146a1544b4f61ab8b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spellerText: {fileID: 0}
+  spellerText: {fileID: 893651055}
   DEFAULTTEXT: Your text here
 --- !u!1 &130257320
 GameObject:
@@ -540,6 +542,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls:
@@ -703,6 +707,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -1047,6 +1053,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -1576,6 +1584,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -1673,12 +1683,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32291ff5512d1d24aae5bffd30ee6a7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sequenceCompleteEvent:
+  connectedEvent:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  connectedEvent:
+  sequenceCompleteEvent:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
@@ -1688,13 +1698,36 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  decoderAddress: 127.0.0.1
+  newMessagesEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: NewMessagesEventType, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  newPredictionEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: NewPredictionEventType, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  selectionEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: SelectionEventType, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  signalQualityEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: SignalQualityEventType, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  decoderAddress: 
   isRunning: 0
   nframe: 0
-  ISI: 60
   lastframetime: 0
+  target_only: 0
   codebook: {fileID: 4900000, guid: 0b3fec475bd5e5343b9be09135ff98fe, type: 3}
   FRAMESPERCODEBIT: 1
+  selectionThreshold: 0.1
+  prediction_frames: 600
+  calibration_frames: 252
 --- !u!4 &333924877
 Transform:
   m_ObjectHideFlags: 0
@@ -1819,6 +1852,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -2047,6 +2082,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -2214,6 +2251,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -2324,6 +2363,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -2616,6 +2657,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -2742,6 +2785,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -3088,6 +3133,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -3652,6 +3699,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -3898,6 +3947,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -4002,6 +4053,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -4128,6 +4181,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -4297,6 +4352,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -4460,6 +4517,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -4883,6 +4942,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -5003,6 +5064,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -5334,7 +5397,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 568270977}
-        m_MethodName: GoCalibration
+        m_MethodName: GoSimpleCalibration
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5441,6 +5504,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -5610,6 +5675,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -5779,6 +5846,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -6027,6 +6096,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -6190,6 +6261,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -6844,6 +6917,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -7013,6 +7088,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -7182,6 +7259,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -7351,6 +7430,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -7520,6 +7601,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -7689,9 +7772,22 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 77475102}
+        m_MethodName: removeCharacter
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   selectedObjectEvent:
@@ -7841,6 +7937,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -7967,6 +8065,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls:
@@ -8130,6 +8230,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -8250,6 +8352,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -8534,6 +8638,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -8778,6 +8884,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -9056,6 +9164,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -9370,6 +9480,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -9539,6 +9651,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -10018,6 +10132,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -10138,6 +10254,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -10419,6 +10537,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -10545,6 +10665,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -11082,6 +11204,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -11251,6 +11375,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -11414,6 +11540,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -11534,6 +11662,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -11829,6 +11959,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -11837,8 +11969,8 @@ MonoBehaviour:
   selectedObjectEvent:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 77475096}
-        m_MethodName: 
+      - m_Target: {fileID: 77475102}
+        m_MethodName: addCharacter
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -12148,6 +12280,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -12396,6 +12530,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -12565,6 +12701,8 @@ MonoBehaviour:
   isVisible: 0
   flicker_color: {r: 0, g: 0, b: 0, a: 0}
   live_predictions: 1
+  camObject: {fileID: 0}
+  max_distance: 60
   selectedEvent:
     m_PersistentCalls:
       m_Calls: []

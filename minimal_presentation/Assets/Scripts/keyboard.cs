@@ -26,7 +26,8 @@ public class keyboard : MonoBehaviour
     }
     public void addCharacter(GameObject go)
     {
-        spellerText.text += go.name;
+        if ( go != null )
+            spellerText.text += go.name;
     }
     public void removeCharacter()
     {
