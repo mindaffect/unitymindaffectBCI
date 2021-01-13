@@ -179,6 +179,7 @@ namespace nl.ma.utopia
         public StimulusState ss;
         public int[][] stimSeq;
         public int tgtidx;
+        public static int framesperbit = 1; // control the flicker rate for debugging...
 
         public Flicker(
             int[][] stimSeq,
@@ -211,12 +212,20 @@ namespace nl.ma.utopia
 
         private void update_ss()
         {
-            // get index into stimulus-sequencew, with wraparound
-            int ssidx = this.nframe % this.stimSeq.Length;
+            // get index into stimulus-sequencew, with wraparound and frames-per-bit
+            int ssidx = this.nframe/framesperbit % this.stimSeq.Length;
             // set the stimulus state
             int[] curss = this.stimSeq[ssidx];
             for (int i = 0; i < this.ss.stimulusState.Length; i++) this.ss.stimulusState[i] = curss[i];
             this.ss.target_idx = this.tgtidx;
+            this.ss.sendEvents = this.sendEvents & this.nframe % framesperbit == 0;
+        }
+
+        private void clear_ss()
+        {
+            // turn off all stimuli
+            for (int i = 0; i < this.ss.stimulusState.Length; i++)
+                this.ss.stimulusState[i] = 0;
             this.ss.sendEvents = this.sendEvents;
         }
 
@@ -227,8 +236,14 @@ namespace nl.ma.utopia
             {
                 return false;
             }
-            // extract the current frames stimulus state
-            update_ss();
+            if (this.nframe == this.numframes)
+            {   // set to all off
+                clear_ss();
+            }
+            else
+            {   // extract the current frames stimulus state
+                update_ss();
+            }
             return true;
         }
 
@@ -821,7 +836,7 @@ namespace nl.ma.utopia
         private int nframe = 0;
         // number of update calls per bit in the flicker code
         //  - use this to slow down the stimulus, e.g. for debugging or slow devices such as tactile vibrators
-        public int FRAMESPERCODEBIT = 1;
+        //public int FRAMESPERCODEBIT = 1;
 
         public Noisetag() : this(new System.IO.StreamReader("mgold_61_6521_psk_60hz.txt"), null, null) { }
         public Noisetag(System.IO.TextReader stimFile, UtopiaController utopiaController, GSM stimulusSequenceStack)
@@ -851,6 +866,11 @@ namespace nl.ma.utopia
             this.laststate = new StimulusState(null, null, -1, false);
             this.lastrawstate = new StimulusState(null, null, -1, false);
             this.objIDs = null;
+        }
+
+        public int setFramesPerBit(int fpb)
+        {
+            return Flicker.framesperbit = fpb;
         }
 
         public bool connect(string host = null, int port = -1, int timeout_ms = 1000)
@@ -889,7 +909,7 @@ namespace nl.ma.utopia
         {
             nframe = nframe + 1;
             // only move to the next codebook entry every FramesPerCodeBit calls..
-            if (nframe % Math.Max(FRAMESPERCODEBIT,1) != 0) return true;
+            //if (nframe % Math.Max(FRAMESPERCODEBIT,1) != 0) return true;
 
             bool hasNext = this.stimulusStateMachineStack.next(t);
             if (hasNext)
