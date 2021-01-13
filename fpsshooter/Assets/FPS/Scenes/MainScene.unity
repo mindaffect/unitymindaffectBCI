@@ -4494,11 +4494,16 @@ MonoBehaviour:
   decoderAddress: 
   isRunning: 0
   nframe: 0
-  ISI: 60
   lastframetime: 0
   target_only: 0
+  connect_loop_running: 0
+  frametime_loop_running: 0
   codebook: {fileID: 4900000, guid: 0b3fec475bd5e5343b9be09135ff98fe, type: 3}
-  FRAMESPERCODEBIT: 1
+  targetFrameRate: 10
+  FRAMESPERCODEBIT: -1
+  selectionThreshold: 0.1
+  prediction_frames: 600
+  calibration_frames: 252
 --- !u!4 &1181754398
 Transform:
   m_ObjectHideFlags: 0
