@@ -39,6 +39,8 @@ public class NoisetagController : MonoBehaviour
     static public int ISI = 60;
     public long lastframetime;
     public bool target_only = false;
+    public bool connect_loop_running = false;
+    public bool frametime_loop_running = false;
     // singlenton pattern....
     public static NoisetagController instance = null;
     public TextAsset codebook = null;
@@ -47,7 +49,8 @@ public class NoisetagController : MonoBehaviour
     // TODO: make the set of objIDs we use a configuration option -- for use with other pres systems.
     private int[] objIDs = null;
     // number of video frames per noisetag codebit
-    public int FRAMESPERCODEBIT = 1;
+    public float targetFrameRate = 60.0f; 
+    public int FRAMESPERCODEBIT = -1;
 
     public float selectionThreshold = .1f;
     public int prediction_frames = ISI*10;
@@ -80,7 +83,15 @@ public class NoisetagController : MonoBehaviour
         // VSYNC on, so we a) run fast, b) are time-accurate.
         Screen.SetResolution(Screen.width, Screen.height, FullScreenMode.ExclusiveFullScreen);
         // FORCE!! Sync framerate to monitors refresh rate
+        // get the current display rate, and set the vSyncCount to get as close as possible
+        // for the code bits
         QualitySettings.vSyncCount = 1;
+        if (FRAMESPERCODEBIT <= 0) // set framesperbit to be close to target framerate
+        {
+            int refreshRate = Screen.currentResolution.refreshRate;
+            float framesperbit = refreshRate / QualitySettings.vSyncCount / targetFrameRate;
+            FRAMESPERCODEBIT = (int) Math.Round(framesperbit + .1);
+        }
 
         nt = new Noisetag(new System.IO.StringReader(codebook.text), null, null);
 
@@ -92,6 +103,7 @@ public class NoisetagController : MonoBehaviour
         nt.addPredictionHandler(newPredictionHandler);
         nt.addSignalQualityHandler(signalQualityHandler);
         nt.addNewTargetHandler(newTargetHandler);
+        nt.setFramesPerBit(FRAMESPERCODEBIT);
 
         // init the info on the set of objIDs we are managing..
         if (objIDs == null)
@@ -120,9 +132,16 @@ public class NoisetagController : MonoBehaviour
     // Keep trying to connect until successful
     public IEnumerator KeepTryingToConnect()
     {
+        // ensure is singleton
+        if (connect_loop_running)
+        {
+            Debug.Log("Connection management loop already running!");
+            yield break;
+        }
         // run forever, so auto-reconnect if connection is dropped
         while (true)
         {
+            connect_loop_running = true;
             if (!nt.isConnected())
             {
                 tryToConnect(10);
@@ -130,6 +149,7 @@ public class NoisetagController : MonoBehaviour
             // check again in .5s
             yield return new WaitForSeconds(.5f);
         }
+        connect_loop_running = false;
     }
 
     public void tryToConnect(int timeout_ms)
@@ -235,11 +255,19 @@ public class NoisetagController : MonoBehaviour
     // add a coroutine to record exact time-stamps for the frame rendering..
     public IEnumerator recordFrameTime()
     {
+        // ensure is singlenton recording loop
+        if (frametime_loop_running)
+        {
+            Debug.Log("Frametime recorder already running!");
+            yield break;
+        }
         while (true) // so we never terminate
         {
+            frametime_loop_running = true;
             yield return new WaitForEndOfFrame();
             lastframetime = nt.getTimeStamp();
         }
+        frametime_loop_running = false;
     }
 
     public void newMessageHandler(List<UtopiaMessage> msgs)
@@ -301,7 +329,7 @@ public class NoisetagController : MonoBehaviour
 
         nframe++;
         // don't update the code-stuff if in slowdown mode..
-        if (nframe % Math.Max(FRAMESPERCODEBIT,1) != 0) return; 
+        //if (nframe % Math.Max(FRAMESPERCODEBIT,1) != 0) return; 
 
         wasRunning = isRunning;
         isRunning = this.nt.updateStimulusState(nframe);
@@ -314,7 +342,7 @@ public class NoisetagController : MonoBehaviour
             return;
         }
         stimulusState = nt.getStimulusState();
-        Debug.Log(stimulusState);
+        //if (stimulusState != null ) Debug.Log(stimulusState);
         if (stimulusState != null && stimulusState.target_idx >= 0 && stimulusState.target_idx < stimulusState.stimulusState.Length)
         {
             logstr += stimulusState.stimulusState[stimulusState.target_idx] > 0 ? "*" : ".";
