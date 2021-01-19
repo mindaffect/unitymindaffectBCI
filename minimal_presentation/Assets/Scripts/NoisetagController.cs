@@ -24,6 +24,7 @@ public class NoisetagController : MonoBehaviour
 {
     // make an event systemfor relevant noise tag events..
     public UnityEvent connectedEvent;
+    public UnityEvent lostConnectionEvent;
     public UnityEvent sequenceCompleteEvent;
     public UnityEvent newTargetEvent;
     public NewMessagesEventType newMessagesEvent;
@@ -40,6 +41,8 @@ public class NoisetagController : MonoBehaviour
     public long lastframetime;
     public bool target_only = false;
     public bool connect_loop_running = false;
+    public long last_connected_time = 0;
+    public long lostConnectionTimeout_ms = 5000; // register disconnection if trying for 5s
     public bool frametime_loop_running = false;
     // singlenton pattern....
     public static NoisetagController instance = null;
@@ -126,6 +129,7 @@ public class NoisetagController : MonoBehaviour
         StartCoroutine(recordFrameTime());
 
         // magic co-routine to make and maintain the decoder connection
+        last_connected_time = nt.getTimeStamp();
         StartCoroutine(KeepTryingToConnect());
     }
 
@@ -144,7 +148,10 @@ public class NoisetagController : MonoBehaviour
             connect_loop_running = true;
             if (!nt.isConnected())
             {
-                tryToConnect(10);
+                tryToConnect(100);
+            } else
+            {
+                last_connected_time = nt.getTimeStamp();
             }
             // check again in .5s
             yield return new WaitForSeconds(.5f);
@@ -165,6 +172,9 @@ public class NoisetagController : MonoBehaviour
             Debug.Log("Connected to " + this.decoderAddress);
             nt.modeChange("idle");
             if ( connectedEvent != null ) connectedEvent.Invoke();
+        } else if (  nt.getTimeStamp() > last_connected_time + lostConnectionTimeout_ms)
+        {
+            if (lostConnectionEvent != null) lostConnectionEvent.Invoke();
         }
     }
 
@@ -185,6 +195,7 @@ public class NoisetagController : MonoBehaviour
             Debug.Log("Warning: already connected....");
         }
         decoderAddress = newaddress;
+        last_connected_time = nt.getTimeStamp(); // restart the connection timeout clock
         StartCoroutine(KeepTryingToConnect());
     }
 

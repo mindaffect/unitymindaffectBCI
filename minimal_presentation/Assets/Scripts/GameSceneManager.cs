@@ -12,6 +12,7 @@ public class GameSceneManager : MonoBehaviour
     public GameObject connectingObject;
     public GameObject signalQualityObject;
     public GameObject activeObject = null;
+    public GameObject lostConnectionObject;
     public int nCalibrationTrials=10;
     public int nPredictionTrials=10;
 
@@ -48,10 +49,10 @@ public class GameSceneManager : MonoBehaviour
         }
         if ( Input.anyKeyDown )
         {
-            print("key press detected");
             // stop current stimulus and return to main menu
             if ( NoisetagController.Instance.isRunning)
             {
+                print("key press detected");
                 NoisetagController.Instance.stopFlicker();
                 NoisetagController.Instance.modeChange("idle");
             }
@@ -60,7 +61,7 @@ public class GameSceneManager : MonoBehaviour
 
     void setActiveObject(GameObject go)
     {
-        if (activeObject != null) activeObject.SetActive(false);
+        if (activeObject != null && activeObject!=go) activeObject.SetActive(false);
         activeObject = go;
         activeObject.SetActive(true);
     }
@@ -74,6 +75,11 @@ public class GameSceneManager : MonoBehaviour
     public void GoConnecting()
     {
         setActiveObject(connectingObject);
+    }
+
+    public void GoLostConnection()
+    {
+        setActiveObject(lostConnectionObject);
     }
 
     public void GoCalibration()
