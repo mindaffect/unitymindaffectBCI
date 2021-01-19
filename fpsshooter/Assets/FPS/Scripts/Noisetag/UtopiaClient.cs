@@ -91,11 +91,17 @@ namespace nl.ma.utopiaserver {
 			}
 		}
 
-            if (host == null || host.Length == 0) return false;
-            if ( this.clientSocket == null ) this.clientSocket = new TcpClient();
+            if (host == null || host.Length == 0 || host == "-" ) return false;
+            //if ( this.clientSocket == null )
+                this.clientSocket = new TcpClient();
             try
             {
-                this.clientSocket.Connect(host, port);
+                // connect with a timeout... csharp style
+                var result = this.clientSocket.BeginConnect(host,port, null, null);
+                var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromMilliseconds(timeout_ms));
+                this.clientSocket.EndConnect(result);
+                // we have connected
+                //this.clientSocket.Connect(host, port);
             } catch ( SocketException ex)
             {
 
