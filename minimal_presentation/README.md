@@ -21,6 +21,12 @@ Installing mindaffectBCI
 
 That's easy, download this repository and launch the project with unity.
 
+Note: It may be that when you open the project in unity there is no _MainScene_ in the Hierarchy.  If that is the case then:
+ 1. Delete the Camera and Directional Light
+ 2. In the project browser navigate to: Assests->ScenesCopy
+ 3. Copy MainScene.unity into the Hiearchy
+You should now have a full scene tree in the hierarch, with a MainScene, Camera, GameSceneManager etc.
+
 Getting Support
 ---------------
 
