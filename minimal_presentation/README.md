@@ -10,9 +10,10 @@ This repository is organized roughly as follows:
  - `Assets ` - contains the assests for this unity project.  Important parts within this are:
    - Scripts - contains the C# scripts which actually do most of the work.  Within this you have
      - Noisetag - which contains the C# interface to the mindaffect Decoder.  This is a direct copy of the [C# SDK from](github.com/mindaffect/csharpmindaffectBCI)
-     - NoisetagController.cs - this script is the main unity object for managing the decoder connection
-     - NoisetagBehaviour.cs - this script contains the behaviour that allows a GameObject to be controlled by the BCI
+     - NoisetagController.cs - this script is the main unity object for managing the decoder connection.  Attach this script to an invisible object at the root of your gam hierarchy, to enable the brain-based interaction for your game.
+     - NoisetagBehaviour.cs - this script contains the behaviour that allows a GameObject to be controlled by the BCI.  Attach this script to a game object to enable BCI control for that object.
      - GameManager.cs - this script is the main manager for the different phase of the game, e.g. switching between calibration and prediction
+   - Scenes - the scenes for this game.  In paticular, the `MainScene.unity` contains the main scene, which should be the root of games scene hierarchy.
    - Models - the 3d models
    - doc - contains general documentation for developers on the architecture of the mindaffectBCI and the low-level networking protocols it uses.  (Whilst useful to give an overview, ideally you should not need to read this.)
 
