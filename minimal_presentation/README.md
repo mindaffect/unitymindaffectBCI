@@ -30,8 +30,7 @@ You should now have a full scene tree in the hierarch, with a MainScene, Camera,
 Getting Support
 ---------------
 
-If you run into and issue you can either directly raise an issue on the projects [github page](https://github.com/mindaffect/unitymindaffectBCI) or directly contact the developers on [gitter](https://gitter.im/mindaffect) -- to complain, complement, or just chat:
-[![Join the chat at https://gitter.im/mindaffect/unitymindaffectBCI](https://badges.gitter.im/mindaffect/unitymindaffectBCI.svg)](https://gitter.im/mindaffect/unitymindaffectBCI?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+If you run into and issue you can either directly raise an issue on the projects [github page](https://github.com/mindaffect/unitymindaffectBCI) 
 
 Testing the mindaffectBCI SDK
 -----------------------------
