@@ -26,6 +26,13 @@ Note: It may be that when you open the project in unity there is no _MainScene_ 
  3. Copy MainScene.unity into the Hiearchy
 You should now have a full scene tree in the hierarch, with a MainScene, Camera, ntcontroller etc.
 
+### Note: Unity version 2019.4 (LTS)
+These projects have been tested with unity versions up to 2019.4 (LTS), and ( fps_shooter in particular ) are known to have issues with later versions.   Thus, we recommend using version _2019.4.31f (LTS)_ with these projects.
+
+### Note: Package Conflicts
+When you first import this game to unity, if the versions do not match exactly, you may see lots of compilation errors.  These are most likely caused by package version conflicts.  The most likely culprits are Text Mesh Pro and VersionControl.   To solution is to go to the package manager (Window->Package Manager) and then update at least to versions compatible with your current unity version (the GUI will tell you which have been tested stable.)
+
+
 Getting Support
 ---------------
 
