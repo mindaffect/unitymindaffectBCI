@@ -68,11 +68,13 @@ MonoBehaviour:
       m_Text: '<b><size=14>Drag Prefab to Scene</size></b>
 
 
-        To get your room into the game, you need to drag the <b>Room_Altar</b> Prefab
-        from the <b>Project Window</b> into the <b>Scene Window</b>.
+        To get your
+        room into the game, you need to drag the <b>Room_Altar</b> Prefab from the
+        <b>Project Window</b> into the <b>Scene Window</b>.
 
 
-        Prefab is located in:
+        Prefab is located
+        in:
 
         <b>FPS</B> > <b>Prefabs</b> > <b>Level</b> > <b>Level</b>'
       m_TutorialButtonText: 
